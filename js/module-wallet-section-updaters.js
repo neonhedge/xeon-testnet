@@ -246,7 +246,12 @@ function updateSectionValues_Staking(
     document.getElementById("assignedToMiningValue").textContent = formatValue(assignedMiningUSDT);
 
     // Update charts
-    const percentage = (stakedBalance / totalHoldings) * 100;
+    let percentage;
+    if (totalHoldings !== 0) {
+        percentage = (stakedBalance / totalHoldings) * 100;
+    } else {
+        percentage = 0; // Set percentage to zero if totalHoldings is zero to avoid NaN error when we devide by zero above^
+    }
     // ==========================================
     const circle = document.querySelector('#stakedVsMyBalanceDash');
     const percentageText = document.querySelector('#stakedVsMyBalancePercent');

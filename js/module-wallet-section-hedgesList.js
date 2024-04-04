@@ -24,7 +24,6 @@ export async function loadHedgesModule() {
 
     // Proceed to fetch hedge structs
     console.log('fetching hedges for wallet: ' + userAddress);
-    alert('start index: ' + startIndex);
     switch (dataType) {
       case 'Options Created':
         data = await hedgingInstance.getUserOptionsCreated(userAddress, startIndex, limit);
@@ -205,7 +204,6 @@ export async function loadHedgesModule() {
       if (!executed && isInViewport(element)) {
         callback();
         executed = true;
-        alert('executed' + executed)
       }
     };
   }
