@@ -118,6 +118,7 @@ section.sectionCenter {
 	margin:0px;
 	box-sizing:border-box;
 	color: #08e7fe !important;/* darker */
+	text-shadow: 0 0 2px #188dd6, 0 0 3px #188dd6, 0 0 15px #188dd6, 0 0 15px #188dd6, 0 0 3px #188dd6, 3px 3px 0.5px #0e567c !important;
 }
 .left-paner-parent {
 	position: relative;
