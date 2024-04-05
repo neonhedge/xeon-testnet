@@ -226,7 +226,7 @@ async function chainCheck() {
             swal({
                 type: "warning",
                 title: "Switch to Sepolia Testnet",
-                text: "Wrong galaxy dude... \nCowboys & Aliens",
+                text: "Wrong galaxy bro... \nCowboys & Aliens",
                 html: true,
                 showCancelButton: true,
                 confirmButtonColor: "#04C86C",
