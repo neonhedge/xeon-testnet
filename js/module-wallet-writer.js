@@ -62,7 +62,6 @@ async function approvalDepositInterface(tokenAmount, tokenAddress) {
         };
         return number.toLocaleString('en-US', options);
     };
-
     // token balance check
     const walletBalanceRaw = await tokenWalletBalance(tokenAddress, walletAddress);
     const walletBalance = fromBigIntNumberToDecimal(walletBalanceRaw, decimals);
@@ -676,7 +675,7 @@ function tokenDepositedMessage(transactionHash) {
             <div class="approvalInfo">
                 <p>
                 <span class="txInfoHead txInfoSymbol"> view transaction... <a href="https://sepolia.etherscan.io/tx/${transactionHash}" target="_blank"><i class="fa fa-external-link"></i></a> </span>
-                <span class="txInfoHead txInfoSymbol"> trade on silkroad... <a href="./silkroad.html" target="_blank"><i class="fa fa-external-link"></i></a> </span>
+                <span class="txInfoHead txInfoSymbol"> trade on silkroad... <a href="./index.html" target="_blank"><i class="fa fa-external-link"></i></a> </span>
                 </p>
             </div>
         </div>`;

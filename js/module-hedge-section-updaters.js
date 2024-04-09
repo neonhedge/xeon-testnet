@@ -185,9 +185,10 @@ function updateSectionValues_Gains(
             };
             return number.toLocaleString('en-US', options);
         };
+        
 
         // Check writer gains
-        const writerGainsDiv = document.getElementById("writerGains");
+        const writerGainsDiv = document.getElementById("writerGainsBase");
         if (writerGains < 0) {
             writerGainsDiv.style.backgroundColor = "rgba(255, 0, 0, 0.5)";
         } else if (writerGains > 0) {
@@ -195,7 +196,7 @@ function updateSectionValues_Gains(
         }
 
         // Check taker gains
-        const takerGainsDiv = document.getElementById("takerGains");
+        const takerGainsDiv = document.getElementById("takerGainsBase");
         if (takerGains < 0) {
             takerGainsDiv.style.backgroundColor = "rgba(255, 0, 0, 0.5)";
         } else if (takerGains > 0) {
@@ -244,15 +245,16 @@ function updateSectionValues_Gains(
         const settledAlreadyButton = document.getElementById("settledAlready");
 
         $(".dealButton").hide();
-        if (status === 1) {
+        status = parseFloat(status);
+        if (status == 1) {
             if (userAddress !== owner) {
             takeHedgeButton.style.display = "inline-block";
             } else {
             deleteHedgeButton.style.display = "inline-block";
             }
-        } else if (status === 2) {
+        } else if (status == 2) {
             zapHedgeButton.style.display = "inline-block";
-        } else if (status === 3) {
+        } else if (status == 3) {
             settledAlreadyButton.style.display = "inline-block";
         }
   

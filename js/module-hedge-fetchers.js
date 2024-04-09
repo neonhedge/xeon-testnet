@@ -111,7 +111,7 @@ async function fetchSection_HedgeCard(){
         let takerGains;
         let writerGains;
         switch (hedgeTypeString) {
-        case 0: // CALL - cost max loss if price goes down
+        case 'CALL': // CALL - cost max loss if price goes down
             if(marketvalue > startValueDeci + costDeci) {
                 takerGains = marketvalue - startValueDeci + costDeci;
                 writerGains = startValueDeci + costDeci - marketvalue;
@@ -120,7 +120,7 @@ async function fetchSection_HedgeCard(){
                 writerGains = costDeci;
             }
             break;
-        case 1: // PUT - cost max loss if price goes up
+        case 'PUT': // PUT - cost max loss if price goes up
             if(marketvalue > startValueDeci - costDeci) {
                 takerGains =- costDeci;
                 writerGains = costDeci;
@@ -129,7 +129,7 @@ async function fetchSection_HedgeCard(){
                 writerGains = costDeci + marketvalue - startValueDeci;
             }
             break;
-        case 2: // SWAP - no cost paid in equity swaps
+        case 'SWAP': // SWAP - no cost paid in equity swaps
             if(marketvalue > startValueDeci + costDeci) {
                 takerGains = marketvalue - startValueDeci;
                 writerGains = startValueDeci - marketvalue;

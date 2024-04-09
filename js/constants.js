@@ -299,7 +299,7 @@ async function tokenWalletBalance (tokenAddress, walletAddress) {
     // Get balance of the token for the wallet address
     try {
         const balance = await tokenContract.balanceOf(walletAddress);
-        console.log('Token balance:', ethers.utils.formatUnits(balance, 18)); // Assuming token has 18 decimals
+        console.log('Wallet token balance:', balance);
         return balance;
     } catch (error) {
         console.error('Error fetching token balance:', error);
