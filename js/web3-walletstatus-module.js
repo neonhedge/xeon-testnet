@@ -56,7 +56,7 @@ async function handleAccountChange(wallets) {
         swal({
             type: "warning",
             title: "Wallect Required",
-            text: "Please connect a wallet to use the Neon Hedge Dapp.",
+            text: "Please connect a wallet to use the Dapp.",
             html: true,
             showCancelButton: true,
             confirmButtonColor: "#04C86C",
@@ -130,7 +130,7 @@ async function unlockedWallet() {
             swal({
                 type: "warning",
                 title: "Wallect Required",
-                text: "Please connect wallet to use the Neon Hedge Dapp.",
+                text: "Please connect wallet to use the Dapp.",
                 html: true,
                 showCancelButton: true,
                 confirmButtonColor: "#04C86C",
@@ -226,7 +226,7 @@ async function chainCheck() {
             swal({
                 type: "warning",
                 title: "Switch to Sepolia Testnet",
-                text: "Wrong galaxy bro... \nCowboys & Aliens",
+                text: "Wrong galaxy dude... \nCowboys & Aliens",
                 html: true,
                 showCancelButton: true,
                 confirmButtonColor: "#04C86C",
