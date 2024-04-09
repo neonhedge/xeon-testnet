@@ -2,9 +2,10 @@
 pragma solidity ^0.8.4;
 
 // Xeon Protocol - Universal ERC20 OTC Hedging and Lending. 
-// Testnet Version 2.3
-// Deployed on Sepolia Testnet 25/01/2024
+// Testnet Version 2.5
+// Deployed on Sepolia Testnet 10/04/2024
 // Sepolia testnet on the basis of Uniswap V2 Router support
+// Security and Refactoring due during public testnet
 
 // ====================Description===========================
 // Protocol accepts an ERC20 address to function as below;
@@ -357,7 +358,7 @@ contract oXEONVAULT {
     function createHedge(uint tool, address token, uint256 amount, uint256 cost, uint256 strikeprice, uint256 deadline) external nonReentrant {
         require(tool <= 2 && amount > 0 && cost > 0 && deadline > block.timestamp, "Invalid option parameters");
         (, , , uint256 withdrawable, , ) = getUserTokenBalances(token, msg.sender);
-        require(withdrawable > 0, "Insufficient balance");
+        require(withdrawable > 0, "Insufficient Vault Balance. Deposit more tokens");
 
         // Assign option values directly to the struct
         hedgingOption storage newOption = hedgeMap[optionID];
@@ -414,7 +415,7 @@ contract oXEONVAULT {
 
         require(_optionId < optionID && msg.sender != hedge.owner, "Invalid option ID | Owner can't buy");
         (, , , uint256 withdrawable, , ) = getUserTokenBalances(hedge.paired, msg.sender);
-        require(withdrawable >= hedge.cost, "Insufficient free pair currency balance");
+        require(withdrawable >= hedge.cost, "Insufficient free Vault balance");
 
         // Calculate, check, and update start value based on the hedge type
         (hedge.startValue, ) = (hedge.hedgeType == HedgeType.SWAP)
@@ -484,7 +485,7 @@ contract oXEONVAULT {
         address tokenToUse = (msg.sender == hedge.owner) ? hedge.token : hedge.paired;
         // Topup tokens
         (, , , uint256 withdrawable, , ) = getUserTokenBalances(tokenToUse, msg.sender);
-        require(withdrawable >= amount, "Insufficient token balance");
+        require(withdrawable >= amount, "Insufficient Vault balance. Deposit more tokens");
         // Update lockedinuse
         userBalance storage bal = userBalanceMap[tokenToUse][msg.sender];
         bal.lockedinuse = bal.lockedinuse.add(hedge.cost);
