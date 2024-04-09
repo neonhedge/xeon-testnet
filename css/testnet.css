@@ -77,6 +77,10 @@ main {
     left:0;
     z-index:0;
 }
+.aboutTestnet span a {
+  position: relative;
+  z-index: 2;
+}
 
 .rewardsInformer, .testnetIntro {
     position: relative;
@@ -197,6 +201,7 @@ main {
     font-size: 1.1rem;
     border: 0.5px solid #08e7fe;
     padding: 0.5rem 1.2rem;
+    z-index: 1;
 }
 .testnetH {
     z-index: 1;
