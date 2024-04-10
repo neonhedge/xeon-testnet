@@ -1,4 +1,4 @@
-import { MyGlobals } from './_silkroad.js';
+import { MyGlobals } from './_silkroad_globals.js';
 import { CONSTANTS, getAccounts, getUserBalancesForToken, truncateAddress, commaNumbering, cardCommaFormat, fromWeiToFixed5, getTokenDecimals, getTokenDecimalSymbolName, isValidEthereumAddress, fromDecimalToBigInt, fromBigIntNumberToDecimal } from './constants.js';
 import { purchaseInterface, toggleBookmark } from './module-silkroad-writer.js';
 

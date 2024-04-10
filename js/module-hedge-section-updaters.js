@@ -189,19 +189,30 @@ function updateSectionValues_Gains(
 
         // Check writer gains
         const writerGainsDiv = document.getElementById("writerGainsBase");
+        const writerCard = document.getElementById("ownerProfitabil");
         if (writerGains < 0) {
             writerGainsDiv.style.backgroundColor = "rgba(255, 0, 0, 0.5)";
+            writerCard.style.backgroundImage = 'url(\'./imgs/svg-loss-arrow.svg\')'; 
         } else if (writerGains > 0) {
-            writerGainsDiv.style.backgroundColor = "rgba(0, 255, 0, 0.5)";
+            writerGainsDiv.style.backgroundColor = "rgb(8, 147, 83)";
+            writerCard.style.backgroundImage = 'url(\'./imgs/svg-profit-arrow.svg\')'; 
         }
 
         // Check taker gains
         const takerGainsDiv = document.getElementById("takerGainsBase");
+        const takerCard = document.getElementById("takerProfitabil");
         if (takerGains < 0) {
             takerGainsDiv.style.backgroundColor = "rgba(255, 0, 0, 0.5)";
+            takerCard.style.backgroundImage = 'url(\'./imgs/svg-loss-arrow.svg\')'; 
         } else if (takerGains > 0) {
-            takerGainsDiv.style.backgroundColor = "rgba(0, 255, 0, 0.5)";
+            takerGainsDiv.style.backgroundColor = "rgb(8, 147, 83)";
+            takerCard.style.backgroundImage = 'url(\'./imgs/svg-profit-arrow.svg\')'; 
         }
+        //background styling & positioning
+        writerCard.style.backgroundRepeat = 'no-repeat';
+        takerCard.style.backgroundRepeat = 'no-repeat';
+        writerCard.style.backgroundPosition = 'center';
+        takerCard.style.backgroundPosition = 'center';
 
         // Display writer gains and taker gains with symbols
         //writer

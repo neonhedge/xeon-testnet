@@ -4,6 +4,7 @@
 import { CONSTANTS, getUserBalancesForToken, getTokenETHValue, truncateAddress, isValidEthereumAddress, cardCommaFormat, fromBigIntNumberToDecimal, fromDecimalToBigInt, getAccounts, getTokenDecimalSymbolName, getSymbol, getTokenDecimals } from './constants.js';
 import { loadOptions } from './module-market-card-fetchers.js';
 import { initializeConnection } from './web3-walletstatus-module.js';
+import { checkAndCallPageTries } from './_silkroad.js';
 
 //==============================================================
 // Validity Checkers
@@ -915,7 +916,7 @@ function hedgePurchasedMessage(transactionHash) {
             closeOnConfirm: true
         }, async function(isConfirm) {
             if (isConfirm) {
-                await initializeConnection();
+                await checkAndCallPageTries();
             }  else {
                 // User clicked the cancel button
                 swal("Cancelled", "Your money is safe :)", "error");
@@ -966,7 +967,7 @@ function hedgeDeletedMessage(transactionHash) {
             closeOnConfirm: true
         }, async function(isConfirm) {
             if (isConfirm) {
-                await initializeConnection();
+                await checkAndCallPageTries();
             }  else {
                 // User clicked the cancel button
                 swal("Cancelled", "Your money is safe :)", "error");

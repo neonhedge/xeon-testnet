@@ -6,6 +6,7 @@ import { initializeConnection, chainCheck, reqConnect, handleAccountChange, hand
 import { refreshDataOnElements, loadOptions, fetchOptionStrip,  prepareTimestamp, noOptionsSwal } from './module-market-card-fetchers.js';
 import { loadSidebar, loadSidebarVolume_All, loadSidebarVolume_Token, loadPastEvents, prepareEventListItem } from './module-market-sidebar-fetchers.js';
 import { setupWritingModule, createForm, submitWriting, purchaseInterface, deleteInterface } from './module-silkroad-writer.js';
+import { MyGlobals } from './_silkroad_globals.js';
 /*=========================================================================
     Wallet Page Main Functions
 ==========================================================================*/
@@ -72,16 +73,6 @@ async function pageModulesLoadingScript() {
 /*========================================================================
     On page load
 ==========================================================================*/
-//define globals
-export const MyGlobals = {
-	wallet	: '',
-	Mode : 0,
-	outputArray : [],
-	startIndex : 0,
-	lastItemIndex : 0,
-	profitBg : 'imgs/repayment2.webp',
-	lossBg : 'imgs/repayment2.webp'
-};
 
 //define tab is highlighted
 $(document).ready(async function(){

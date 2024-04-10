@@ -5,8 +5,7 @@
 import { CONSTANTS } from './constants.js';
 import { initializeConnection, chainCheck, unlockedWallet, reqConnect, handleAccountChange, handleNetworkChange, popupSuccess} from './web3-walletstatus-module.js';
 import { fetchSection_HedgeCard, fetchSection_HedgeCardDefault } from './module-hedge-fetchers.js';
-import { prepareEventListItem, } from './module-market-sidebar-fetchers.js';
-import { setupWritingModule, createForm, submitWriting, purchaseInterface, deleteInterface, toggleBookmark } from './module-silkroad-writer.js';
+import { purchaseInterface, deleteInterface, toggleBookmark } from './module-silkroad-writer.js';
 
 /*=========================================================================
     Hedge Page Main Scripts
@@ -64,7 +63,7 @@ export const verifyAndCallPageTries = async () => {
 $(document).ready(async function () {
 
   // Countdown timer refresh
-  const setatmIntervalAsync = (fn, ms) => {
+  const setRefreshInterval = (fn, ms) => {
     let countdown = ms / 1000;
     const refreshCounter = document.getElementById('refreshCounter');
     const updateCountdown = () => {
@@ -79,14 +78,14 @@ $(document).ready(async function () {
         updateCountdown();
         if (countdown === 0) {
           clearInterval(intervalId);
-          setatmIntervalAsync(fn, ms);
+          setRefreshInterval(fn, ms);
         }
       }, 1000);
     });
   };
 
   // Load sections periodically
-  setatmIntervalAsync(async () => {
+  setRefreshInterval(async () => {
     verifyAndCallPageTries();
   }, 45000);
 
