@@ -254,7 +254,7 @@ async function submitWriting(hedgeType, tokenAddress, tokenAmount, premium, stri
         if (receipt.status === 1) {
             console.log('Transaction hash:', receipt.transactionHash);
             handleTransactionSuccess(receipt.transactionHash); 
-            loadOptions(MyGlobals.startIndex, window.readLimit);
+            loadOptions(0, window.readLimit);
         } else {
             console.log('Transaction failed. Receipt status:', receipt.status);
             handleTransactionFailure(receipt.status); 

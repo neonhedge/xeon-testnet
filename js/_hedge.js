@@ -18,10 +18,11 @@ import { setupWritingModule, createForm, submitWriting, purchaseInterface, delet
 // if conditions to continueLoading change the script stops at scouter, event listeners at bottom of page to help with alerts & state changes
 
 // Start making calls to Dapp modules
-export const checkAndCallPageTries = async () => {
-  let scouter = await pageModulesLoadingScript();
-  
+export const verifyAndCallPageTries = async () => {
+
+  let scouter = await hedgeLoaderScript();  
   console.log('connection Scout: '+ scouter);  
+  
   if (scouter) {
     // Load sections automatically & periodically
     const asyncFunctions = [fetchSection_HedgeCard];
@@ -86,7 +87,7 @@ $(document).ready(async function () {
 
   // Load sections periodically
   setatmIntervalAsync(async () => {
-    checkAndCallPageTries();
+    verifyAndCallPageTries();
   }, 45000);
 
   // Update optionId
@@ -97,7 +98,7 @@ $(document).ready(async function () {
 
 
 // Checks if all wallet checks pass before calling page modules
-async function pageModulesLoadingScript() {
+async function hedgeLoaderScript() {
   let continueLoad = false;
   try {
       continueLoad = initializeConnection();
@@ -152,25 +153,25 @@ $(document).ready(async function () {
 });
 
 async function setupEventListening() {
-let hedgingInstance = window.hedgingInstance;
+    let hedgingInstance = window.hedgingInstance;
 
-// Hedging Events
-try {
-      const filter_hedgeCreated = await hedgingInstance.filters.hedgeCreated();
-      hedgingInstance.on(filter_hedgeCreated, handleHedgeCreatedEvent);
+    // Hedging Events
+    try {
+          const filter_hedgeCreated = await hedgingInstance.filters.hedgeCreated();
+          hedgingInstance.on(filter_hedgeCreated, handleHedgeCreatedEvent);
 
-      const filter_hedgePurchased = await hedgingInstance.filters.hedgePurchased();
-      hedgingInstance.on(filter_hedgePurchased, handleHedgePurchasedEvent);
+          const filter_hedgePurchased = await hedgingInstance.filters.hedgePurchased();
+          hedgingInstance.on(filter_hedgePurchased, handleHedgePurchasedEvent);
 
-      const filter_hedgeSettled = await hedgingInstance.filters.hedgeSettled();
-      hedgingInstance.on(filter_hedgeSettled, handleHedgeSettledEvent);
+          const filter_hedgeSettled = await hedgingInstance.filters.hedgeSettled();
+          hedgingInstance.on(filter_hedgeSettled, handleHedgeSettledEvent);
 
-      const filter_minedHedge = await hedgingInstance.filters.minedHedge();
-      hedgingInstance.on(filter_minedHedge, handleMinedHedgeEvent);
+          const filter_minedHedge = await hedgingInstance.filters.minedHedge();
+          hedgingInstance.on(filter_minedHedge, handleMinedHedgeEvent);
 
-  } catch (error) {
-      console.error('Error setting up event listening:', error);
-  }
+      } catch (error) {
+          console.error('Error setting up event listening:', error);
+      }
 }
 /* GitHub https://github.com/ethers-io/ethers.js/issues/1307
 hedgingInstance.on(filter_hedgeCreated, async (...args) => {
@@ -242,12 +243,12 @@ ethereum.on("accountsChanged", async (accounts) => {
   if(accounts.length > 0) {
     handleAccountChange(accounts);
     // Refresh accounts & page Feed
-    checkAndCallPageTries();
+    verifyAndCallPageTries();
   } else {
     handleAccountChange(accounts);
     // Refresh wallet widget directly, force wallet initialization check first		
     window.currentAccount = null;
-    checkAndCallPageTries();
+    verifyAndCallPageTries();
   }
 });
 

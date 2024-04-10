@@ -110,38 +110,53 @@ async function fetchSection_HedgeCard(){
         // +ve or -ve integers passed to update function.. logic below is sound       
         let takerGains;
         let writerGains;
-        switch (hedgeTypeString) {
-        case 'CALL': // CALL - cost max loss if price goes down
-            if(marketvalue > startValueDeci + costDeci) {
-                takerGains = marketvalue - startValueDeci + costDeci;
-                writerGains = startValueDeci + costDeci - marketvalue;
-            }else{
-                takerGains =- costDeci;
+        // Perform the check for startValueDeci once
+const positiveStartValue = startValueDeci > 0;
+
+switch (hedgeTypeString) {
+    case 'CALL': // CALL - cost max loss if price goes down
+        if (positiveStartValue) {
+            if (marketvalue <= strikeValueDeci) {
+                takerGains = -costDeci;
                 writerGains = costDeci;
+            } else {
+                takerGains = marketvalue - strikeValueDeci - costDeci;
+                writerGains = costDeci + strikeValueDeci - marketvalue;
             }
-            break;
-        case 'PUT': // PUT - cost max loss if price goes up
-            if(marketvalue > startValueDeci - costDeci) {
-                takerGains =- costDeci;
-                writerGains = costDeci;
-            }else{
-                takerGains = startValueDeci - marketvalue - costDeci;
-                writerGains = costDeci + marketvalue - startValueDeci;
-            }
-            break;
-        case 'SWAP': // SWAP - no cost paid in equity swaps
-            if(marketvalue > startValueDeci + costDeci) {
-                takerGains = marketvalue - startValueDeci;
-                writerGains = startValueDeci - marketvalue;
-            }else{
-                takerGains = startValueDeci - marketvalue;
-                writerGains = marketvalue - startValueDeci;
-            }
-            break;
-        default:
+        } else {
             takerGains = 0;
             writerGains = 0;
         }
+        break;
+    case 'PUT': // PUT - cost max loss if price goes up
+        if (positiveStartValue) {
+            if (marketvalue >= strikeValueDeci) {
+                takerGains = -costDeci;
+                writerGains = costDeci;
+            } else {
+                takerGains = strikeValueDeci - marketvalue - costDeci;
+                writerGains = costDeci + marketvalue - strikeValueDeci;
+            }
+        } else {
+            takerGains = 0;
+            writerGains = 0;
+        }
+        break;
+    case 'SWAP': // SWAP - no cost paid in equity swaps
+        if (positiveStartValue) {
+            takerGains = marketvalue - startValueDeci;
+            writerGains = startValueDeci - marketvalue;
+        } else {
+            takerGains = 0;
+            writerGains = 0;
+        }
+        break;
+    default:
+        takerGains = 0;
+        writerGains = 0;
+        break;
+}
+
 
         // Helper to farmatting below, format dates to "DD/MM/YYYY"
         function formatTimestamp(timestamp) {
