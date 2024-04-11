@@ -685,6 +685,13 @@ fieldset input{
 .walBalTitle{
 	width:100%;
 }
+
+/* time picker */
+.ui-timepicker-container {
+	z-index: 100000 !important;
+	position: absolute;
+}
+
 /* timeline of hedges */
 .hedgesTimeline {
 	position: relative;

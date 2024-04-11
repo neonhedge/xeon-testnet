@@ -4,7 +4,7 @@
 import { CONSTANTS, getUserBalancesForToken, getTokenETHValue, truncateAddress, isValidEthereumAddress, cardCommaFormat, fromBigIntNumberToDecimal, fromDecimalToBigInt, getAccounts, getTokenDecimalSymbolName, getSymbol, getTokenDecimals } from './constants.js';
 import { loadOptions } from './module-market-card-fetchers.js';
 import { initializeConnection } from './web3-walletstatus-module.js';
-import { checkAndCallPageTries } from './_silkroad.js';
+import { checkAndCallPageTries, readyTimePicker } from './_silkroad.js';
 
 //==============================================================
 // Validity Checkers
@@ -105,7 +105,9 @@ async function createForm() {
 		<input id="premium" class="sweetInput shldi benown" type="number" step="any" aria-invalid="false" autocomplete="cost of buying trade">
 		<label id="strikeLabel" class="labels"><img src="imgs/info.png" title="strike price of the underlying tokens in paired currency">strike price:</label>
 		<input id="strikePrice" class="sweetInput shldi benown" type="number" step="any" aria-invalid="false" autocomplete="break even value for the trade">
-		<br>
+		<label id="expiryLabel" class="labels"><img src="imgs/info.png" title="Select expiry time in hours">expiry (hours):</label>
+        <input id="expiryTime" class="sweetInput shldi benown" type="number" aria-invalid="false" autocomplete="expiry time in hours">
+        <br>
         <div id="tokenAmountValueDiv" class="swal-button-container" style="display:none;">
             <span class="tokenAmountValue">Token Value: </span><span id="tokenAmountValue" title="value of tokens in deal. your premium or cost should be a fraction of this value. eg 10% of value"></span>
         </div>
@@ -142,6 +144,16 @@ async function createForm() {
 			const premium = document.getElementById('premium').value;
 			const strikePrice = document.getElementById('strikePrice').value;
 
+            // Get the expiry time value
+            const expiryHours = parseInt(document.getElementById('expiryTime').value);
+            if (isNaN(expiryHours) || expiryHours <= 0) {
+                alert('Please enter a valid expiry time in hours.');
+                return;
+            }
+
+            // Calculate expiry timestamp in milliseconds
+            const expiryTimestamp = Date.now() + (expiryHours * 3600 * 1000);
+
 			// Prepare the form values if needed
 			const values = {
 				hedgeType,
@@ -149,6 +161,7 @@ async function createForm() {
 				tokenAmount,
 				premium,
 				strikePrice,
+                expiryTimestamp
 			};
 
             // You can use 'values' as needed
@@ -198,7 +211,10 @@ async function createForm() {
             console.error("Error processing wallet address:", error);
         }
     });
+
+    readyTimePicker();
 }
+
 
 async function submitWriting(hedgeType, tokenAddress, tokenAmount, premium, strikePrice) {
     const accounts = await getAccounts();

@@ -45,7 +45,13 @@ $(document).ready(async function () {
     setatmIntervalAsync(async () => {
         checkAndCallPageTries();
     }, 45000);
+	
 });
+
+//Initiate time picker
+function readyTimePicker() {
+	$('input#expiryTime').timepicker({});
+}
 
 
 // Checks if all wallet checks pass before calling page modules
@@ -546,3 +552,4 @@ ethereum.on("chainChanged", (chainID) => {
 
 
 
+export { readyTimePicker };
