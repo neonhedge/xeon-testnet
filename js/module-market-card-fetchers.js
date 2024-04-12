@@ -337,21 +337,27 @@ async function loadOptions(){
 			*/
 			let myhedgesCreatedLength = 100;
 			let myhedgesTakenLength = 100;
-		
+			
+			//alert('start index' + MyGlobals.startIndex + ' read limit ' + window.readLimit + ' myhedgesCreatedLength ' + myhedgesCreatedLength + ' myhedgesTakenLength ' + myhedgesTakenLength);
 			MyGlobals.startIndex = Math.max(myhedgesCreatedLength, myhedgesTakenLength) - 1 - window.readLimit;
 			if(MyGlobals.startIndex < 0){MyGlobals.startIndex = 0;}
 		}
 		
 		// Fetch both created and taken swaps
-		let swapsCreatedArray = await hedgingInstance.getUserSwapsCreated(userAddress, MyGlobals.startIndex, window.readLimit);
-		let swapsTakenArray = await hedgingInstance.getUserSwapsTaken(userAddress, MyGlobals.startIndex, window.readLimit);
-		
-		// Combine and sort the arrays
-		let allSwapsArray = [...swapsCreatedArray, ...swapsTakenArray].sort((a, b) => a - b);
-		
-		// Combine both types of swaps
-		//let combinedArray = [...allOptionsArray, ...allSwapsArray]; if we need both
-		let combinedArray = allSwapsArray;
+		let combinedArray = 0;
+		try {
+			let swapsCreatedArray = await hedgingInstance.getUserSwapsCreated(userAddress, MyGlobals.startIndex, window.readLimit);
+			let swapsTakenArray = await hedgingInstance.getUserSwapsTaken(userAddress, MyGlobals.startIndex, window.readLimit);
+			
+			// Combine and sort the arrays
+			let allSwapsArray = [...swapsCreatedArray, ...swapsTakenArray].sort((a, b) => a - b);
+			
+			// Combine both types of swaps
+			//let combinedArray = [...allOptionsArray, ...allSwapsArray]; if we need both
+			combinedArray = allSwapsArray;
+		} catch (error) {
+			noOptionsSwal();
+		}		
 		
 		if (combinedArray.length > 0) {
 			$('#hedgesTimeline').empty();
@@ -596,67 +602,47 @@ async function fetchOptionCard(optionId){
 		if(bookmarkState){
 			var bookmark_btn = "<div class='raise_S_tab _bookmarkjump'  data-optionid="+optionId+"><img src='./imgs/unbookmark_.png' width='18px'/></div>";
 		}
-		//display nav 1 - vacant option
-		if(window.nav == 1){
-			var projectCard = `
-			<div class="tl_hedgeCard statemark_ill_wish">				
-						<div class="tl_hedgeGrid">
-							<div class="projectLogo" style="background-image:url('./imgs/erc20-uniswap-tr.png')"></div>
-							<div class="projectName">
-								<div>`+name+`<a class="blockexplorer" href="https://etherscan.io/address/'`+tokenPairAddress+`" target="_blank" alt="SC" title="Go to Etherscan">`+truncatedTokenAdd+`</a></div>
-								<div class="tl_bagsize">`+amount+` `+symbol+`</div>
-							</div>
+		
+		var projectCard = `
+		<div class="tl_hedgeCard statemark_ill_wish">				
+					<div class="tl_hedgeGrid">
+						<div class="projectLogo" style="background-image:url('./imgs/erc20-uniswap-tr.png')"></div>
+						<div class="projectName">
+							<div>`+name+`<a class="blockexplorer" href="https://etherscan.io/address/'`+tokenPairAddress+`" target="_blank" alt="SC" title="Go to Etherscan">`+truncatedTokenAdd+`</a></div>
+							<div class="tl_bagsize">`+amount+` `+symbol+`</div>
 						</div>
-						
-						<div class="valueHold">
-							<div class="assetsValue">
-								<div class="valueTitle"></div>
-								<div class="assetsMarketValue highlightOption">`+marketvalueFormatted+` `+pairSymbol+`</div>
-							</div>
-							<div class="assetsType `+typeClass+`">
-								<div class="typeTitle">HEDGE</div>
-								<div class="assetsTypeValue highlightOption `+typeClassValue+`">`+hedgeType+`</div>
-							</div>
+					</div>
+					
+					<div class="valueHold">
+						<div class="assetsValue">
+							<div class="valueTitle"></div>
+							<div class="assetsMarketValue highlightOption">`+marketvalueFormatted+` `+pairSymbol+`</div>
 						</div>
-						
-						<div class="strategyContainer">
-							<div class="optionMarksHold">
-								<div class="optionMark"><span>Strike:</span><span class="oMfigure">`+strikevalueFormatted+` `+pairSymbol+`</span></div>
-								<div class="optionMark"><span>Premium:</span><span class="oMfigure">`+costFormatted+` `+pairSymbol+`</span></div>
-								<div class="optionMark"><span>Expires:</span><span class="oMfigure">`+timeToExpiry+`</span></div>
-							</div>
-							`+strategyWidget+`
+						<div class="assetsType `+typeClass+`">
+							<div class="typeTitle">HEDGE</div>
+							<div class="assetsTypeValue highlightOption `+typeClassValue+`">`+hedgeType+`</div>
 						</div>
-						<div class="optionSummary">
-							`+activity_btn+`
-							`+action_btn+`
-							<div class="option_S_tab _bookmarkjump">
-								<a class="view_project" href="hedge.html?id=`+optionId+`" target="_blank" alt="View" title="full details">view</a>
-								`+bookmark_btn+`
-							</div>
+					</div>
+					
+					<div class="strategyContainer">
+						<div class="optionMarksHold">
+							<div class="optionMark"><span>Strike:</span><span class="oMfigure">`+strikevalueFormatted+` `+pairSymbol+`</span></div>
+							<div class="optionMark"><span>Premium:</span><span class="oMfigure">`+costFormatted+` `+pairSymbol+`</span></div>
+							<div class="optionMark"><span>Expires:</span><span class="oMfigure">`+timeToExpiry+`</span></div>
 						</div>
-					</div>`;
-			$('#hedgesTimeline').prepend(projectCard);
-		}else{
-			//dont display, already funded
-		}
-		//display nav 1 - repayments
-		if(window.nav == 1 && window.filters == 2 && due >= target){//repaying funding
-			var funded = await prepareTimestamp(startedTime);
-			//prepare the project card
-			var projectCard = '<div class="projectCard raisemark_ill_repayments"><div class="kickoff">funded: ' + startedTime+ ' </div><div class="projectLogoLeft" style="background-image:url(' + logourl + ')"></div><div class="projectName">' + name + '</div><div class="projectRaiseTarget">' + raised + ' ETH</div><div class="mbcard_detail rb_detail"><div class="parent_meter"><div id="meter_guage" style="width:' + length + '%;"></div><span class="measure">' + length +'%</span></div></div><div class="raiseSummary raisemark_ill_repayments"><div class="raise_S_tab _bullbear"><span class="status-dot inrepaying"><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 16 16" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><circle cx="8" cy="8" r="8"></circle></svg><span style="white-space: nowrap;">Repaying</span></span></div><div class="raise_S_tab _socials"><a class="social_links" href="' + twitterURL + '" target="_blank" alt="TWT" title="Go to Twitter page"><img src="imgs/twitter.svg" width="32px"/></a><a class="social_links" href="https://' + telegramURL + '" target="_blank" alt="TG" title="Go to Telegram group"><img src="imgs/telegram.svg" width="32px"/></a><a class="social_links" href="https://etherscan.io/address/' + address + '" target="_blank" alt="SC" title="Go to Etherscan"><img src="imgs/etherscan.svg" width="32px"/></a></div><div class="raise_S_tab _bookmarkjump"><a class="view_project" href="hedge.html?address='+address+'" target="_blank" alt="View" title="Open project">view</a>'+ action_btn +'</div></div></div>';
-			$('#hedgesTimeline').append(projectCard);
-		}else{
-			//dont display, finished repaying
-		}
-		//display nav 1 - awaiting approval
-		if(window.nav == 1 && window.filters == 3 && hedgeStatus == 0){//requesting funding
-			//prepare the project card
-			var projectCard = '<div class="projectCard raisemark_ill_application"><div class="kickoff">ILL requester: <a href="https://etherscan.io/address/' + owner + '" target="_blank" title="requester/owner">' + truncatedOwner+ ' </a></div><div class="projectLogoLeft" style="background-image:url(' + logourl + ')"></div><div class="projectName">' + name + '</div><div class="mbcard_detail rb_detail mbcardpending"><div class="parent_meter"><div class="projectRaiseTarget pendingapproval">ILL Request: ' + amount + ' ETH</div></div></div><div class="raiseSummary"><div class="raise_S_tab _socials"><a class="social_links" href="' + twitterURL + '" target="_blank" alt="TWT" title="Go to Twitter page"><img src="imgs/twitter.svg" width="32px"/></a><a class="social_links" href="https://' + telegramURL + '" target="_blank" alt="TG" title="Go to Telegram group"><img src="imgs/telegram.svg" width="32px"/></a><a class="social_links" href="https://etherscan.io/address/' + address + '" target="_blank" alt="SC" title="Go to Etherscan"><img src="imgs/etherscan.svg" width="32px"/></a></div><div class="raise_S_tab _bookmarkjump">'+ action_btn +'</div></div></div>';
-			$('#hedgesTimeline').append(projectCard);
-		}else{
-			//dont display, finished repaying
-		}
+						`+strategyWidget+`
+					</div>
+					<div class="optionSummary">
+						`+activity_btn+`
+						`+action_btn+`
+						<div class="option_S_tab _bookmarkjump">
+							<a class="view_project" href="hedge.html?id=`+optionId+`" target="_blank" alt="View" title="full details">view</a>
+							`+bookmark_btn+`
+						</div>
+					</div>
+				</div>`;
+		$('#hedgesTimeline').prepend(projectCard);
+		
 	}catch(error) {
 		console.log(error);
 	}
