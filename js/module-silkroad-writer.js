@@ -152,7 +152,8 @@ async function createForm() {
             }
 
             // Calculate expiry timestamp in milliseconds: now + expiry time in hours
-            const expiryTimestamp = Math.floor(Date.now() / 1000) + (expiryHours * 60 * 60);
+            //const expiryTimestamp = Math.floor(Date.now() / 1000) + (expiryHours * 60 * 60);
+            const expiryTimestamp = 0;
 
 			// Prepare the form values if needed
 			const values = {
@@ -247,6 +248,12 @@ async function submitWriting(hedgeType, tokenAddress, tokenAmount, premium, stri
 	hedgeType = parseInt(hedgeType);
 	
 	// *** TESTING ONLY ***
+    // current timestamp in seconds
+	//const deadline = expiryStamp;
+
+    const currentTimestamp = Math.floor(Date.now() / 1000);
+	const twohoursInSeconds = 2 * 60 * 60;
+	const deadline = currentTimestamp + twohoursInSeconds;
     // current timestamp in seconds
 	const deadline = expiryStamp;
 
