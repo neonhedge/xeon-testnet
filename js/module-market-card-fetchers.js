@@ -334,13 +334,11 @@ async function loadOptions(){
 			let myhedgesCreatedLength = myhedgesCreatedArray.length;
 			let myhedgesTakenArray = await hedgingInstance.myoptionsTaken(userAddress);
 			let myhedgesTakenLength = myhedgesTakenArray.length;
+		
+			MyGlobals.startIndex = parseInt(Math.max(myhedgesCreatedLength, myhedgesTakenLength) - 1 - window.readLimit);
+			if(MyGlobals.startIndex <= 0){MyGlobals.startIndex = 0;}
 			*/
-			let myhedgesCreatedLength = 100;
-			let myhedgesTakenLength = 100;
-			
-			//alert('start index' + MyGlobals.startIndex + ' read limit ' + window.readLimit + ' myhedgesCreatedLength ' + myhedgesCreatedLength + ' myhedgesTakenLength ' + myhedgesTakenLength);
-			MyGlobals.startIndex = Math.max(myhedgesCreatedLength, myhedgesTakenLength) - 1 - window.readLimit;
-			if(MyGlobals.startIndex < 0){MyGlobals.startIndex = 0;}
+			MyGlobals.startIndex = 0;
 		}
 		
 		// Fetch both created and taken swaps
