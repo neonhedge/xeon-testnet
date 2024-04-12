@@ -329,7 +329,7 @@ async function prepareEventListItem(event, eventTopic) {
 			amountSpan.title = 'Create Value: ' + createValueDecimal + ' ' + pairTokenSymbol;
 			break;
 		case 'hedgePurchased':
-			const payOffHex = decodedValues.payOff._hex;
+			const payOffHex = decodedValues.startValue._hex;
 			const payOffDecimal = fromBigIntNumberToDecimal(payOffHex, tokenDecimals);
 			amountSpan.textContent = payOffDecimal + ' ' + pairTokenSymbol;
 			amountSpan.title = 'Pay Off: ' + payOffDecimal + ' ' + pairTokenSymbol;
