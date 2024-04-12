@@ -33,9 +33,6 @@
 	<link rel="stylesheet" type="text/css" href="./css/hedge-card-core.css">
     <link rel="stylesheet" type="text/css" href="css/_hedge.css">
     <link rel="stylesheet" type="text/css" href="css/sweetalert/sweetalert.css">
-	
-	<!-- charting scripts -->
-	<script type="module" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"></script>
 
 	<!-- hedge page scripts -->    
 	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.js"></script>
@@ -47,7 +44,7 @@
 
 	<!-- hedge dependancy scripts -->
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.17.1/matter.min.js"></script> <!-- ASSET BASKET-->
-
+	<script type="module" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"></script>
 
 
 	<script>
@@ -276,8 +273,9 @@
 						<div id="ownerTrunc" class="userWallet ownerMark">0X00...000</div>
 					</div>						
 					<!-- graphic svg -->	
-					<div class="ownerProfitabil">
+					<div class="ownerProfitabil" id ="ownerProfitabil">
 						<span id="writerGainsBase">+ 0.00$</span>
+						<!--
 						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 150 100">
 							<rect x="0" y="0" width="100%" height="100%" fill="none" />
 							<defs>
@@ -286,7 +284,7 @@
 							</marker>
 							</defs>
 							<path d="M10 90 L50 20 L90 70 L130 10" stroke="#25d366" fill="none" stroke-width="0.65" marker-end="url(#arrowup)" />
-						</svg>
+						</svg>-->
 					</div>		
 				</div>
 				<div class="partiesAction">
@@ -314,8 +312,9 @@
 						<div id="takerTrunc" class="userWallet ownerMark">0X00...000</div>
 					</div>						
 					<!-- graphic svg -->	
-					<div class="ownerProfitabil">
+					<div class="ownerProfitabil" id="takerProfitabil">
 						<span id="takerGainsBase">+ 0.00$</span>
+						<!--
 						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 150 100">
 							<rect x="0" y="0" width="100%" height="100%" fill="none" />
 							<defs>
@@ -324,7 +323,7 @@
 							</marker>
 							</defs>
 							<path d="M10 10 L50 80 L90 30 L130 90" stroke="red" fill="none" stroke-width="0.65" marker-end="url(#arrowdown)" />
-						</svg>
+						</svg>-->
 					</div>		
 				</div>
 			</div>			
