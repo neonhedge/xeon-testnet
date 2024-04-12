@@ -152,7 +152,7 @@ async function createForm() {
             }
 
             // Calculate expiry timestamp in milliseconds: now + expiry time in hours
-            const expiryTimestamp = Math.floor(Date.now() / 1000) + (expiryHours * 3600 * 1000);
+            const expiryTimestamp = Math.floor(Date.now() / 1000) + (expiryHours * 60 * 60);
 
 			// Prepare the form values if needed
 			const values = {
