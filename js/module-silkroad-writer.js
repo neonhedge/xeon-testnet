@@ -260,8 +260,6 @@ async function submitWriting(hedgeType, tokenAddress, tokenAmount, premium, stri
     const currentTimestamp = Math.floor(Date.now() / 1000);
 	const twohoursInSeconds = 2 * 60 * 60;
 	const deadline = currentTimestamp + twohoursInSeconds;
-    // current timestamp in seconds
-	const deadline = expiryStamp;
 
 	console.log('hedgeType: ' + hedgeType + '\ntokenAddress: ' + tokenAddress + '\ntokenAmountWei: ' + tokenAmountWei + '\npremiumWei: ' + premiumWei + '\nstrikePriceWei: ' + strikePriceWei + '\ndeadline: ' + deadline);
 
