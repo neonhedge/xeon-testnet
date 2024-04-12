@@ -151,8 +151,8 @@ async function createForm() {
                 return;
             }
 
-            // Calculate expiry timestamp in milliseconds
-            const expiryTimestamp = Date.now() + (expiryHours * 3600 * 1000);
+            // Calculate expiry timestamp in milliseconds: now + expiry time in hours
+            const expiryTimestamp = Math.floor(Date.now() / 1000) + (expiryHours * 3600 * 1000);
 
 			// Prepare the form values if needed
 			const values = {
@@ -216,7 +216,7 @@ async function createForm() {
 }
 
 
-async function submitWriting(hedgeType, tokenAddress, tokenAmount, premium, strikePrice) {
+async function submitWriting(hedgeType, tokenAddress, tokenAmount, premium, strikePrice, expiryStamp) {
     const accounts = await getAccounts();
     if (accounts.length === 0) {
         alert('Please connect your wallet');
@@ -247,10 +247,8 @@ async function submitWriting(hedgeType, tokenAddress, tokenAmount, premium, stri
 	hedgeType = parseInt(hedgeType);
 	
 	// *** TESTING ONLY ***
-    // Get the current timestamp in seconds & add 6 months for testing
-	const currentTimestamp = Math.floor(Date.now() / 1000);
-	const sixMonthsInSeconds = 6 * 30 * 24 * 60 * 60;
-	const deadline = currentTimestamp + sixMonthsInSeconds;
+    // current timestamp in seconds
+	const deadline = expiryStamp;
 
 	console.log('hedgeType: ' + hedgeType + '\ntokenAddress: ' + tokenAddress + '\ntokenAmountWei: ' + tokenAmountWei + '\npremiumWei: ' + premiumWei + '\nstrikePriceWei: ' + strikePriceWei + '\ndeadline: ' + deadline);
 
