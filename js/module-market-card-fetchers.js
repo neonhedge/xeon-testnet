@@ -564,8 +564,8 @@ async function fetchOptionCard(optionId){
 			<div class="strategyHold" title="`+description+`">
 				<img class="strategyImage" src="./imgs/equityswap.svg" />
 				<div class="strategyDataHold">
-					<div class="topValue-put">profit zone `+costFormatted+` `+pairSymbol+`</div>
-					<div class="bottomValue-put">loss zone</div>
+					<div class="topValue-swap">profit zone</div>
+					<div class="bottomValue-swap">loss zone</div>
 				</div>
 			</div>`;
 		}
