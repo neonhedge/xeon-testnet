@@ -5,6 +5,7 @@ import { CONSTANTS, getUserBalancesForToken, getTokenETHValue, truncateAddress, 
 import { loadOptions } from './module-market-card-fetchers.js';
 import { initializeConnection } from './web3-walletstatus-module.js';
 import { checkAndCallPageTries, readyTimePicker } from './_silkroad.js';
+import { popupSuccess } from './web3-walletstatus-module.js';
 
 //==============================================================
 // Validity Checkers
@@ -993,7 +994,10 @@ function hedgeDeletedMessage(transactionHash) {
 
 // Bookmark Toggle
 async function toggleBookmark(optionID) {
-    let optionId = ethers.BigNumber.from(parseInt(optionID));
+
+    optionID = parseFloat(optionID);
+    let optionId = ethers.BigNumber.from(optionID);
+    
 	try {
 		
 		// Submit Tx, accepts uint256 or BN
@@ -1005,13 +1009,14 @@ async function toggleBookmark(optionID) {
         if (receipt.status === 1) {
 	
 			// Bookmark state updated successfully
-			console.log('Bookmark State Updated:', receipt.events.BookmarkToggle.returnValues.bookmarked);
+            console.log(receipt.events[0]);
+            console.log('Bookmark State Updated:', receipt.events[0].args[2]);
+			//console.log('Bookmark State Updated:', receipt.events.bookmarkToggle.returnValues.bookmarked);
 		
-			// Display bookmark state in a browser alert
-			alert('Bookmark State Updated: ' + receipt.events.BookmarkToggle.returnValues.bookmarked);
-		
-			const state = receipt.events.bookmarked.returnValues[2];
-			const hedge = receipt.events.bookmarked.returnValues[1];
+			const state = receipt.events[0].args[2];
+			const hedge = receipt.events[0].args[1]._hex;
+
+            const hedgeDecimal = hedge ? parseInt(hedge, 16).toString() : 0; // Convert hex to decimal if available
 		
 			const tx_hash = receipt.transactionHash;
 			const outputCurrency = ''; // or GUN - currency focus is outcome of Tx
@@ -1023,11 +1028,11 @@ async function toggleBookmark(optionID) {
 			if (state) {
 				message = 'Bookmark saved..';
 				title = 'Bookmarked!';
-				nonTxAction = 'hedge: ' + hedge + ' bookmarked: ';
+				nonTxAction = 'hedge: ' + hedgeDecimal + ' bookmarked: ';
 			} else {
 				title = 'Removed!';
 				message = 'Bookmark removed..';
-				nonTxAction = 'hedge: ' + hedge + ' unmarked: ';
+				nonTxAction = 'hedge: ' + hedgeDecimal + ' unmarked: ';
 			}
 		
 			// Call popupSuccess function without waiting for it to complete (async)
@@ -1060,7 +1065,7 @@ async function toggleBookmark(optionID) {
 		// Handle error
 		const text = error.message;
 		swal({
-			title: "Cancelled.",
+			title: "Error Bookmarking.",
 			type: "error",
 			allowOutsideClick: true,
 			text: text,

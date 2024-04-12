@@ -424,7 +424,7 @@ async function loadOptions(){
 	document.querySelectorAll('._bookmarkjump').forEach(button => {
 		button.addEventListener('click', function() {
 			// retrieve the optionId from the data-optionid attribute
-			const optionId = this.dataset.optionid;
+			const optionId = parseInt(this.dataset.optionid);
 			toggleBookmark(optionId);
 		});
 	});
