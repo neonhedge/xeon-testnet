@@ -608,7 +608,7 @@ async function fetchOptionCard(optionId){
 					<div class="tl_hedgeGrid">
 						<div class="projectLogo" style="background-image:url('./imgs/erc20-uniswap-tr.png')"></div>
 						<div class="projectName">
-							<div>`+name+`<a class="blockexplorer" href="https://etherscan.io/address/'`+tokenPairAddress+`" target="_blank" alt="SC" title="Go to Etherscan">`+truncatedTokenAdd+`</a></div>
+							<div>`+name+`<a class="blockexplorer" href="https://etherscan.io/address/`+tokenPairAddress+`" target="_blank" alt="SC" title="Go to Etherscan">`+truncatedTokenAdd+`</a></div>
 							<div class="tl_bagsize">`+amount+` `+symbol+`</div>
 						</div>
 					</div>
