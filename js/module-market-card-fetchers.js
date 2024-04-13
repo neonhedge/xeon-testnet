@@ -192,18 +192,19 @@ async function loadOptions(){
 			}
 			MyGlobals.startIndex = MyGlobals.lastItemIndex - 1 - window.readLimit;
 		} else {
+			
 			//deprecating this until we add a dedicated array fetcher in Vault, might not be needed - 12 April 2024
+			// needs a array lenght helper function that accepts address only
 			/*
 			let myhedgesCreatedArray = await hedgingInstance.myoptionsCreated(userAddress);
 			let myhedgesCreatedLength = myhedgesCreatedArray.length;
 			let myhedgesTakenArray = await hedgingInstance.myoptionsTaken(userAddress);
 			let myhedgesTakenLength = myhedgesTakenArray.length;
-			*/
-			let myhedgesCreatedLength = 100;
-			let myhedgesTakenLength = 100;
 		
-			MyGlobals.startIndex = Math.max(myhedgesCreatedLength, myhedgesTakenLength) - 1 - window.readLimit;
-			if(MyGlobals.startIndex < 0){MyGlobals.startIndex = 0;}
+			MyGlobals.startIndex = parseInt(Math.max(myhedgesCreatedLength, myhedgesTakenLength) - 1 - window.readLimit);
+			if(MyGlobals.startIndex <= 0){MyGlobals.startIndex = 0;}
+			*/
+			MyGlobals.startIndex = 0;
 		}
 		
 		// Fetch both created and taken options for use in combined array
@@ -329,10 +330,11 @@ async function loadOptions(){
 			MyGlobals.startIndex = MyGlobals.lastItemIndex - 1 - window.readLimit;
 		} else {
 			//deprecating this until we add a dedicated array fetcher in Vault, might not be needed - 12 April 2024
+			// needs a array lenght helper function that accepts address only
 			/*
-			let myhedgesCreatedArray = await hedgingInstance.myoptionsCreated(userAddress);
+			let myhedgesCreatedArray = await hedgingInstance.myswapsCreated(userAddress);
 			let myhedgesCreatedLength = myhedgesCreatedArray.length;
-			let myhedgesTakenArray = await hedgingInstance.myoptionsTaken(userAddress);
+			let myhedgesTakenArray = await hedgingInstance.myswapsTaken(userAddress);
 			let myhedgesTakenLength = myhedgesTakenArray.length;
 		
 			MyGlobals.startIndex = parseInt(Math.max(myhedgesCreatedLength, myhedgesTakenLength) - 1 - window.readLimit);
