@@ -604,7 +604,7 @@ async function fetchOptionCard(optionId){
 		}
 		
 		var projectCard = `
-		<div class="tl_hedgeCard statemark_ill_wish">				
+		<div class="tl_hedgeCard statemark_ill_wish" id="`+optionId+`">				
 					<div class="tl_hedgeGrid">
 						<div class="projectLogo" style="background-image:url('./imgs/erc20-uniswap-tr.png')"></div>
 						<div class="projectName">
@@ -641,7 +641,10 @@ async function fetchOptionCard(optionId){
 						</div>
 					</div>
 				</div>`;
+		
+		//add to timeline, with smooth transition
 		$('#hedgesTimeline').prepend(projectCard);
+		$("#interfaceWindow" + optionId).slideDown(1000);
 		
 	}catch(error) {
 		console.log(error);
