@@ -399,7 +399,6 @@ contract oXEONVAULT {
         }
 
         // Log protocol analytics
-        optionID++;
         hedgesCreatedVolume[newOption.paired].add(newOption.createValue);
         // Emit
         emit hedgeCreated(token, optionID, newOption.createValue, newOption.hedgeType, msg.sender);
@@ -878,7 +877,7 @@ contract oXEONVAULT {
     // Internal function to retrieve a subset of an array based on startIndex and limit
     function getSubset(uint[] storage fullArray, uint startIndex, uint limit) internal view returns (uint[] memory) {
         uint length = fullArray.length;
-        require(startIndex <= length, "Invalid start index");
+        require(startIndex <= length, "Start index equal array length");
         if (length == 0) {
             return new uint[](0); //return empty array
         }
@@ -1018,6 +1017,22 @@ contract oXEONVAULT {
     }
      function getCountTokenSwaps(address token) external view returns (uint) {
         return tokenSwaps[token].length;
+    }
+
+    // Function to get the length of the options array for a specific user
+    function getUserOptionCount(address user, bool store) external view returns (uint) {
+        if(store) {
+            return myoptionsCreated[user].length;
+        } else {
+            return myoptionsTaken[user].length;
+        }
+    }
+    function getUserSwapCount(address user, bool store) external view returns (uint) {
+        if(store) {
+            return myswapsCreated[user].length;
+        } else {
+            return myswapsTaken[user].length;
+        }        
     }
 
     // Receive function to accept Ether
