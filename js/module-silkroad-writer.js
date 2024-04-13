@@ -1026,13 +1026,13 @@ async function toggleBookmark(optionID) {
 		
 			let message = '', title = '', nonTxAction = '';
 			if (state) {
-				message = 'Bookmark saved..';
+				message = 'Bookmark Added..';
 				title = 'Bookmarked!';
-				nonTxAction = 'hedge: ' + hedgeDecimal + ' bookmarked: ';
+				nonTxAction = 'hedge ID: ' + hedgeDecimal + ' bookmarked ';
 			} else {
 				title = 'Removed!';
-				message = 'Bookmark removed..';
-				nonTxAction = 'hedge: ' + hedgeDecimal + ' unmarked: ';
+				message = 'Bookmark Removed..';
+				nonTxAction = 'hedge ID: ' + hedgeDecimal + ' unmarked ';
 			}
 		
 			// Call popupSuccess function without waiting for it to complete (async)
