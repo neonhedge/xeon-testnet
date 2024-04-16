@@ -28,10 +28,10 @@ async function userTokenList(walletAddress) {
         tokenListContainer.find('.loading').remove();
 
         // Clear existing content 
-        tokenListContainer.innerHTML = '';
-        const noTokensMessage = document.createElement('div');
-        noTokensMessage.textContent = 'No ERC20 Deposits Found. Visit Cashier.';
-        noTokensMessage.classList.add('no-hedges-message');
+        tokenListContainer.html(''); // Changed innerHTML to html()
+        const noTokensMessage = $('<div></div>'); // Changed to jQuery object creation
+        noTokensMessage.text('No ERC20 Deposits Found. Visit Cashier.');
+        noTokensMessage.addClass('no-hedges-message'); // Changed to addClass()
         tokenListContainer.prepend(noTokensMessage);        
     
         console.log("No tokens found for the given wallet address.");
@@ -57,12 +57,19 @@ async function userTokenList(walletAddress) {
     };  
 
     for (const tokenAddress of tokenAddresses) {
+        console.log("balance for token address:", tokenAddress + ", wallet address: " + walletAddress);
         const result = await hedgingInstance.getUserTokenBalances(tokenAddress, walletAddress);
         const depositedBalance = ethers.BigNumber.from(result[0]);
         const withdrawnBalance = ethers.BigNumber.from(result[1]);
 
+        // Check for underflow or overflow
+        if (depositedBalance.lt(withdrawnBalance)) {
+            console.log("Error: Withdrawn balance is greater than deposited balance.");
+            continue; // Skip this token and proceed to the next one
+        }
+
         // Convert deposited and withdrawn balances to BigNumber and handle 1e18 format
-        const currentBalance = depositedBalance .sub(withdrawnBalance);
+        const currentBalance = depositedBalance.sub(withdrawnBalance);
         const tokenInfo = await getTokenInfo(tokenAddress, currentBalance);
 
         if (tokenInfo) {
@@ -87,6 +94,7 @@ async function userTokenList(walletAddress) {
         }
     }
 }
+
 
 // Function to calculate ERC20 token information
 async function getTokenInfo(tokenAddress, balanceBN) {
