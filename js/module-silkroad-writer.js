@@ -106,9 +106,7 @@ async function createForm() {
 		<input id="premium" class="sweetInput shldi benown" type="number" step="any" aria-invalid="false" autocomplete="cost of buying trade">
 		<label id="strikeLabel" class="labels"><img src="imgs/info.png" title="strike price of the underlying tokens in paired currency">strike price:</label>
 		<input id="strikePrice" class="sweetInput shldi benown" type="number" step="any" aria-invalid="false" autocomplete="break even value for the trade">
-		<label id="expiryLabel" class="labels"><img src="imgs/info.png" title="Select expiry time in hours">expiry (hours):</label>
-        <input id="expiryTime" class="sweetInput shldi benown" type="number" aria-invalid="false" autocomplete="expiry time in hours">
-        <br>
+		<br>
         <div id="tokenAmountValueDiv" class="swal-button-container" style="display:none;">
             <span class="tokenAmountValue">Token Value: </span><span id="tokenAmountValue" title="value of tokens in deal. your premium or cost should be a fraction of this value. eg 10% of value"></span>
         </div>
@@ -122,7 +120,10 @@ async function createForm() {
 		</div>
 	  </div>
 	</form>`;
-  
+    /*
+    <label id="expiryLabel" class="labels"><img src="imgs/info.png" title="Select expiry time in hours">expiry (hours):</label>
+    <input id="expiryTime" class="sweetInput shldi benown" type="number" aria-invalid="false" autocomplete="expiry time in hours">
+    */
 	swal({
 		title: "Create OTC Trade",
 		text: privatize,
@@ -146,14 +147,17 @@ async function createForm() {
 			const strikePrice = document.getElementById('strikePrice').value;
 
             // Get the expiry time value
+            /*
             const expiryHours = parseInt(document.getElementById('expiryTime').value);
             if (isNaN(expiryHours) || expiryHours <= 0) {
                 alert('Please enter a valid expiry time in hours.');
                 return;
             }
-
+            
             // Calculate expiry timestamp in milliseconds: now + expiry time in hours
             const expiryTimestamp = Math.floor(Date.now() / 1000) + (expiryHours * 60 * 60);
+            */
+            const expiryTimestamp = 0;
 
 			// Prepare the form values if needed
 			const values = {
@@ -248,8 +252,9 @@ async function submitWriting(hedgeType, tokenAddress, tokenAmount, premium, stri
 	hedgeType = parseInt(hedgeType);
 	
 	// *** TESTING ONLY ***
-    // current timestamp in seconds
-	const deadline = expiryStamp;
+    const currentTimestamp = Math.floor(Date.now() / 1000);
+	const twohoursInSeconds = 2 * 60 * 60;
+	const deadline = currentTimestamp + twohoursInSeconds;
 
 	console.log('hedgeType: ' + hedgeType + '\ntokenAddress: ' + tokenAddress + '\ntokenAmountWei: ' + tokenAmountWei + '\npremiumWei: ' + premiumWei + '\nstrikePriceWei: ' + strikePriceWei + '\ndeadline: ' + deadline);
 
