@@ -5,7 +5,7 @@ pragma solidity ^0.8.4;
 // Testnet Version 2.5
 // Deployed on Sepolia Testnet 10/04/2024
 // Sepolia testnet on the basis of Uniswap V2 Router support
-// Security and Refactoring due during public testnet
+// Testnet goal is a functional basic protocol first. More complex checks, security and refactoring due during public testnet
 
 // ====================Description===========================
 // Protocol accepts an ERC20 address to function as below;
@@ -358,7 +358,7 @@ contract oXEONVAULT {
     function createHedge(uint tool, address token, uint256 amount, uint256 cost, uint256 strikeprice, uint256 deadline) external nonReentrant {
         require(tool <= 2 && amount > 0 && cost > 0 && deadline > block.timestamp, "Invalid option parameters");
         (, , , uint256 withdrawable, , ) = getUserTokenBalances(token, msg.sender);
-        require(withdrawable > 0, "Insufficient Vault Balance. Deposit more tokens");
+        require(withdrawable > 0 && withdrawable >= amount, "Insufficient Vault Balance. Deposit more tokens");
 
         // Assign option values directly to the struct
         hedgingOption storage newOption = hedgeMap[optionID];
