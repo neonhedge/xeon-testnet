@@ -17,10 +17,10 @@ pragma solidity ^0.8.4;
 // - Payout profits and fees to: parties, protocol, miner
 // - Distribute revenue or third party service stakes
 // - Read hedging data storages; array lists, individual mappings and structs, collective mappings and variables
-
+    
 //  Functionality goals
 //1. to receive any ERC20 token as collateral/underlying tokens
-//2. Price tokens in paired currency via getUnderlyingValue
+//2. tokens are priced in their dex paired currency via getUnderlyingValue & getReserves from UniswapV2 standard.
 //4. enable hedge writing using tokens as underlying assets
 //5. enable hedge buying in paired currency for stipulated duration
 //6. settlement based on price of assets in comparison to strike value & terms
@@ -548,6 +548,7 @@ contract oXEONVAULT {
     // on revenue; proceeds for mining a hedge, are NOT moved to staking contract
     // on revenue; native equity swap liquidity proceeds ARE moved to staking contract
     // on revenue; revenue for providing native-collateral ARE transferred to staking contract
+    // only parties in the deal can settle it for now, in testnet, miners to be intergrated later in testnet
     
     struct HedgeInfo {
         uint256 underlyingValue;
