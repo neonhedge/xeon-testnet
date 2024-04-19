@@ -55,7 +55,7 @@ async function handleAccountChange(wallets) {
 
         swal({
             type: "warning",
-            title: "Wallect Required",
+            title: "Wallet Required",
             text: "Please connect a wallet to use the Dapp.",
             html: true,
             showCancelButton: true,
@@ -76,7 +76,7 @@ async function handleAccountChange(wallets) {
         console.log("Wallet Connected:", wallets);
         swal({
             type: "success",
-            title: "Wallect Connected",
+            title: "Wallet Connected",
             text: `${truncateAddress(wallets[0])}`,
             html: true,
             showCancelButton: false,
@@ -129,7 +129,7 @@ async function unlockedWallet() {
             console.log("Please connect to MetaMask.");
             swal({
                 type: "warning",
-                title: "Wallect Required",
+                title: "Wallet Required",
                 text: "Please connect wallet to use the Dapp.",
                 html: true,
                 showCancelButton: true,
