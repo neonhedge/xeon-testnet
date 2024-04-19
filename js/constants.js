@@ -395,14 +395,23 @@ function commaNumbering(number){
 	};
 	return number.toLocaleString('en-US', options);
 }; 
-function cardCommaFormat(number){
+function cardCommaFormat(number) {
+    // Number to string, only to handle scientific notation correctly on cost for instance
+    // Some figures are too small currently returning 0.00 without this
+    const numberString = number.toString();
+    const parsedNumber = parseFloat(numberString);
+
+    // Convert to a string and extract the decimal part 
+    const decimalPart = numberString.split('.')[1];    
+    const maxDecimalPlaces = decimalPart && decimalPart.length === 12 ? 12 : 8;
+
     const options = {
         style: 'decimal',
         minimumFractionDigits: 2,
-        maximumFractionDigits: 7,
+        maximumFractionDigits: maxDecimalPlaces,
     };
-    return number.toLocaleString('en-US', options);
-}; 
+    return parsedNumber.toLocaleString('en-US', options);
+}
 
 // Other backup formaters
 const formatValue = (value) => {

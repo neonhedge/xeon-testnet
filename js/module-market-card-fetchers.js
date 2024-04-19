@@ -533,7 +533,7 @@ async function fetchOptionCard(optionId){
 		let timeToExpiry = days + "d " + hours + "h " + minutes + "m ";
 
 		//strategy description for the option
-		let strategyWidget, description, typeClass, typeClassValue, buttonText, priceText = 'Strike Price', costText = 'Permium';
+		let strategyWidget, description, typeClass, typeClassValue, buttonText, priceText = 'Strike', costText = 'Premium';
 		if(hedgeType == 'CALL') {
 			typeClass = 'aType-call-option';
 			description = `on ${timeToExpiry}\nTaker will be in profit when market price is ABOVE strike price. Market - Strike = Profit Margin. \nTaker's max loss is ${costFormatted}${pairSymbol} if market price is ABOVE strike price.`;
