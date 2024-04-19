@@ -533,7 +533,7 @@ async function fetchOptionCard(optionId){
 		let timeToExpiry = days + "d " + hours + "h " + minutes + "m ";
 
 		//strategy description for the option
-		let strategyWidget, description, typeClass, typeClassValue;
+		let strategyWidget, description, typeClass, typeClassValue, buttonText, priceText = 'Strike Price', costText = 'Permium';
 		if(hedgeType == 'CALL') {
 			typeClass = 'aType-call-option';
 			description = `on ${timeToExpiry}\nTaker will be in profit when market price is ABOVE strike price. Market - Strike = Profit Margin. \nTaker's max loss is ${costFormatted}${pairSymbol} if market price is ABOVE strike price.`;
@@ -545,6 +545,7 @@ async function fetchOptionCard(optionId){
 					<div class="bottomValue-call">max loss `+costFormatted+` `+pairSymbol+`</div>
 				</div>
 			</div>`;
+			buttonText = 'Buy Option';
 		}
 		if(hedgeType == 'PUT') {
 			typeClass = 'aType-put-option';
@@ -557,6 +558,7 @@ async function fetchOptionCard(optionId){
 					<div class="bottomValue-put">profit zone</div>
 				</div>
 			</div>`;
+			buttonText = 'Buy Option';
 		}
 		if(hedgeType == 'SWAP') {
 			typeClass = 'aType-swap-option';
@@ -570,11 +572,14 @@ async function fetchOptionCard(optionId){
 					<div class="bottomValue-swap">loss zone</div>
 				</div>
 			</div>`;
+			buttonText = 'Take Swap';
+			priceText = 'Start Price';
+			costText = 'Swap Cost';
 		}
 		//option action button: buy, running/settle, expired
 		let action_btn, activity_btn;
 		if(status == 1){
-			action_btn = "<div id='"+optionId+"buyButton' class='option_S_tab actionButton buyButton' data-optionid="+optionId+">Buy Option</div>";
+			action_btn = "<div id='"+optionId+"buyButton' class='option_S_tab actionButton buyButton' data-optionid="+optionId+">"+buttonText+"</div>";
 			activity_btn = `
 			<div class="option_S_tab _bullbear">
 				<span class="status-dot inprogress"><svg stroke="currentColor" fill="#188dd6" stroke-width="0" viewBox="0 0 16 16" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><circle cx="8" cy="8" r="8"></circle></svg><span style="white-space: nowrap;">Vacant</span></span>
@@ -626,8 +631,8 @@ async function fetchOptionCard(optionId){
 					
 					<div class="strategyContainer">
 						<div class="optionMarksHold">
-							<div class="optionMark"><span>Strike:</span><span class="oMfigure">`+strikevalueFormatted+` `+pairSymbol+`</span></div>
-							<div class="optionMark"><span>Premium:</span><span class="oMfigure">`+costFormatted+` `+pairSymbol+`</span></div>
+							<div class="optionMark"><span>`+priceText+`:</span><span class="oMfigure">`+strikevalueFormatted+` `+pairSymbol+`</span></div>
+							<div class="optionMark"><span>`+costText+`:</span><span class="oMfigure">`+costFormatted+` `+pairSymbol+`</span></div>
 							<div class="optionMark"><span>Expires:</span><span class="oMfigure">`+timeToExpiry+`</span></div>
 						</div>
 						`+strategyWidget+`
