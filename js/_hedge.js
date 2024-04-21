@@ -138,7 +138,7 @@ $(document).on('click', '#settleHedge', function(e){
 $(document).on('click', '#toggleBookmark', function(e){
   const optionId = parseInt(window.optionID);
   if (optionId) {
-    toggleBookmark();
+    toggleBookmark(optionId);
   }
 });
 

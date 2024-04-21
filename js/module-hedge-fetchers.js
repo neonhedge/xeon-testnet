@@ -110,53 +110,52 @@ async function fetchSection_HedgeCard(){
         // +ve or -ve integers passed to update function.. logic below is sound       
         let takerGains;
         let writerGains;
-        // Perform the check for startValueDeci once
-const positiveStartValue = startValueDeci > 0;
 
-switch (hedgeTypeString) {
-    case 'CALL': // CALL - cost max loss if price goes down
-        if (positiveStartValue) {
-            if (marketvalue <= strikeValueDeci) {
-                takerGains = -costDeci;
-                writerGains = costDeci;
-            } else {
-                takerGains = marketvalue - strikeValueDeci - costDeci;
-                writerGains = costDeci + strikeValueDeci - marketvalue;
-            }
-        } else {
-            takerGains = 0;
-            writerGains = 0;
+        // startValueDeci checked once
+        const positiveStartValue = startValueDeci > 0;
+        switch (hedgeTypeString) {
+            case 'CALL': // CALL - cost max loss if price goes down
+                if (positiveStartValue) {
+                    if (marketvalue <= strikeValueDeci) {
+                        takerGains = -costDeci;
+                        writerGains = costDeci;
+                    } else {
+                        takerGains = marketvalue - strikeValueDeci - costDeci;
+                        writerGains = costDeci + strikeValueDeci - marketvalue;
+                    }
+                } else {
+                    takerGains = 0;
+                    writerGains = 0;
+                }
+                break;
+            case 'PUT': // PUT - cost max loss if price goes up
+                if (positiveStartValue) {
+                    if (marketvalue >= strikeValueDeci) {
+                        takerGains = -costDeci;
+                        writerGains = costDeci;
+                    } else {
+                        takerGains = strikeValueDeci - marketvalue - costDeci;
+                        writerGains = costDeci + marketvalue - strikeValueDeci;
+                    }
+                } else {
+                    takerGains = 0;
+                    writerGains = 0;
+                }
+                break;
+            case 'SWAP': // SWAP - no cost paid in equity swaps
+                if (positiveStartValue) {
+                    takerGains = marketvalue - startValueDeci;
+                    writerGains = startValueDeci - marketvalue;
+                } else {
+                    takerGains = 0;
+                    writerGains = 0;
+                }
+                break;
+            default:
+                takerGains = 0;
+                writerGains = 0;
+                break;
         }
-        break;
-    case 'PUT': // PUT - cost max loss if price goes up
-        if (positiveStartValue) {
-            if (marketvalue >= strikeValueDeci) {
-                takerGains = -costDeci;
-                writerGains = costDeci;
-            } else {
-                takerGains = strikeValueDeci - marketvalue - costDeci;
-                writerGains = costDeci + marketvalue - strikeValueDeci;
-            }
-        } else {
-            takerGains = 0;
-            writerGains = 0;
-        }
-        break;
-    case 'SWAP': // SWAP - no cost paid in equity swaps
-        if (positiveStartValue) {
-            takerGains = marketvalue - startValueDeci;
-            writerGains = startValueDeci - marketvalue;
-        } else {
-            takerGains = 0;
-            writerGains = 0;
-        }
-        break;
-    default:
-        takerGains = 0;
-        writerGains = 0;
-        break;
-}
-
 
         // Helper to farmatting below, format dates to "DD/MM/YYYY"
         function formatTimestamp(timestamp) {
@@ -175,8 +174,6 @@ switch (hedgeTypeString) {
 
         // Get current timestamp in seconds
         const dt_today = Math.floor(Date.now() / 1000);
-
-        // Assuming dt_expiry and dt_created are already in seconds since the Unix epoch
         const lifespan = Math.floor((dt_expiry - dt_created) / 3600);
 
         // Calculate time to expiry in hours
