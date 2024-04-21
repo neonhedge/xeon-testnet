@@ -1480,7 +1480,9 @@ button#transactSubmit{
 }
 .hedge-i-cat {
 	min-width: 120px;
-	flex-grow: 1;
+  	max-width: 200px;
+	flex-grow: 1;	
+	text-align: center;
 	color: #999999 !important;
 	padding: 0 0.2vw;
 	box-sizing: border-box;
