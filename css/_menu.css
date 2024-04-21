@@ -226,7 +226,7 @@
 	/* text-transform:uppercase; */
 	color:#EEE;
 	transition: all 0.2s ease-in-out 0s;
-	background-color: rgba(29, 129, 216, 0.15) !important;	
+	background-color: #071432 !important;	
 	
 	display:inline-flex;
     align-items:center !important;/* vertically align child div centers */
