@@ -599,6 +599,14 @@ async function fetchOptionCard(optionId){
 				<span class="status-dot ended"><svg stroke="currentColor" fill="orange" stroke-width="0" viewBox="0 0 16 16" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><circle cx="8" cy="8" r="8"></circle></svg><span style="white-space: nowrap;">Expired</span></span>
 			</div>`;
 		}
+		if(owner == userAddress){
+			action_btn = "<div id='"+optionId+"buyButton' class='option_S_tab actionButton expiredButton'>"+truncatedOwner+"</div>";
+			activity_btn = `
+			<div class="option_S_tab _bullbear">
+				<span class="status-dot ended"><svg stroke="currentColor" fill="orange" stroke-width="0" viewBox="0 0 16 16" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><circle cx="8" cy="8" r="8"></circle></svg><span style="white-space: nowrap;">Yours</span></span>
+			</div>`;
+		}
+		
 		//bookmark check
 		var bookmarkState = await hedgingInstance.getBookmark(userAddress, optionId);
 		if(!bookmarkState){
