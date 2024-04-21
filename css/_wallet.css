@@ -1476,39 +1476,20 @@ button#transactSubmit{
 	color: #FFF !important;
 }
 .hedge-i-cat {
-	min-width: 70px;
 	min-width: 120px;
-	max-width: 120px;
+	flex-grow: 1;
 	color: #999999 !important;
-	margin-right: 10px;
+	padding: 0 0.2vw;
+	box-sizing: border-box;
 }
-
 .hedge-type {
-    box-sizing: border-box;
-    background-repeat: no-repeat !important;
-    background-position: center center !important;
-    background-size: cover !important;
-}
-
-.hedgeType{
-	color: #dbdbdb !important;
-	text-align: center !important;
-
-	font-family: 'modeseven','bitwise', sans-serif, "Helvetica Neue", Helvetica, Arial !important;
-	text-shadow: 0 0 1.5vw #FFF;
-	background-color: #089353;
-	border-radius: 1.8rem;
-	border-radius: 7px;
-	line-height:1.5;
+	min-width: unset !important;
+	max-width: 50px;
 }
 
 .hedge-symbol {
     text-transform: uppercase;
     color: #dbdbdb !important;
-}
-
-.hedge-valuetitle {
-	flex-grow: 1;
 }
 
 .hedge-value {
@@ -1526,6 +1507,10 @@ button#transactSubmit{
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+.hedge-tx-btn {
+	width: 50px;
 }
 
 .hedgeTxBtn {
