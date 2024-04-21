@@ -179,6 +179,11 @@ export async function loadHedgesModule() {
     button.addEventListener('click', async () => {
       dataType = button.getAttribute('data-type');
 
+      //reset start index
+      window.startIndex = 0;
+
+      // reinitilize trade list
+      const hedgesList = document.querySelector('#hedges-trade-list');
       hedgesList.innerHTML = '';
       loadMoreButton.style.display = 'none';
 
