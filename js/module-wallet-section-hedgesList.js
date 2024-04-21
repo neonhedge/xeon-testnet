@@ -76,16 +76,19 @@ export async function loadHedgesModule() {
 
           const tokenInfo = document.createElement('div');
           tokenInfo.classList.add('token-info');
-          // token symbol
-          const hedgeSymbol = document.createElement('div');
-          hedgeSymbol.classList.add('hedge-symbol', 'hedge-i-cat');
+
+           // token symbol
           const tokenLink = document.createElement('a');
           tokenLink.href = 'https://sepolia.etherscan.io/address/' + result.token;
           tokenLink.target = '_blank';
+
+          const hedgeSymbol = document.createElement('span');
+          tokenLink.classList.add('hedge-symbol', 'hedge-i-cat');
           const [, , symbol] = await getTokenDecimalSymbolName(result.token);
           hedgeSymbol.textContent = symbol;
           tokenLink.appendChild(hedgeSymbol);
           tokenInfo.appendChild(tokenLink);
+                
 
           // market value
           const hedgeValue = document.createElement('div');
@@ -96,6 +99,7 @@ export async function loadHedgesModule() {
           [, , pairedSymbol] = await getTokenDecimalSymbolName(pairedAddress);
           hedgeValue.textContent = cardCommaFormat(hedgeValueDecimal) + ' ' + pairedSymbol;
           tokenInfo.appendChild(hedgeValue);
+
           // cost
           const hedgeCost = document.createElement('div');
           hedgeCost.classList.add('hedge-cost', 'hedge-i-cat');
@@ -103,6 +107,7 @@ export async function loadHedgesModule() {
           const hedgeCostDecimal = fromBigIntNumberToDecimal(costValues, await getTokenDecimals(pairedAddress));
           hedgeCost.textContent = cardCommaFormat(hedgeCostDecimal) + ' ' + pairedSymbol;
           tokenInfo.appendChild(hedgeCost);
+          
           //status
           const hedgeState = document.createElement('div');
           hedgeState.classList.add('hedge-state', 'hedge-i-cat');
