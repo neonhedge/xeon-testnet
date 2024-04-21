@@ -1478,6 +1478,7 @@ button#transactSubmit{
 .hedge-i-cat {
 	min-width: 70px;
 	min-width: 120px;
+	max-width: 120px;
 	color: #999999 !important;
 	margin-right: 10px;
 }
@@ -1511,7 +1512,6 @@ button#transactSubmit{
 }
 
 .hedge-value {
-	flex-grow: 1;
 	color:#089353 !important;
     font-weight: 400;
 }
