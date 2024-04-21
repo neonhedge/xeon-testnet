@@ -156,9 +156,9 @@ p {
 /* informer panel */
 .dappInformer {
 	width: 50%;
-    margin: 2vw auto;
-	padding: 1vw;
-    text-align: center;
+  padding: 5px;
+  margin: 2vw auto;
+  text-align: center;
 	font-size: clamp(14px, 1vw, 15px);
 	cursor:help;
 	transition: background-color 0.3s;
@@ -652,7 +652,6 @@ p {
 
   /* Dapp Development Status */
   .twitter-widget {
-    border: 1px solid #ccc;
     border-radius: 8px;
     overflow: hidden;
   }

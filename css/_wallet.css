@@ -1473,10 +1473,11 @@ button#transactSubmit{
 }
 .hlH {
 	font-size: clamp(14px, 1vw, 15px) !important;
-	color: #FFF !important;
+	color: #eaeaea !important;
 }
 .hSm {
 	max-width: 100px;
+	color: #DDD !important;
 }
 .hedge-i-cat {
 	min-width: 120px;
@@ -1485,7 +1486,7 @@ button#transactSubmit{
 	font-size: clamp(13px, 1vw, 15px);
   	font-weight: 100 !important;
 	text-align: center;
-	color: #999999 !important;
+	color: #DDD;
 	padding: 0 0.2vw;
 	box-sizing: border-box;
 }
@@ -1496,21 +1497,22 @@ button#transactSubmit{
 
 .hedge-symbol {
     text-transform: uppercase;
-    color: #dbdbdb !important;
+	color: rgb(8, 231, 254);
 }
 
 .hedge-value {
 	color:#089353 !important;
     font-weight: 400;
+	white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .hedge-tamount {
-    color: #BEBEBE;
     text-align: right;
 }
 
 .hedge-time {
-    color: #999999;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
