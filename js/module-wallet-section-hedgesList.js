@@ -66,12 +66,23 @@ export async function loadHedgesModule() {
       for (const item of data) {
           const result = await hedgingInstance.getHedgeDetails(item); 
 
+          //prep hedge type in text
+          const typeInt = parseFloat(result.hedgeType);
+          let hedgeTypeTxt;
+          if (typeInt === 0) {
+            hedgeTypeTxt = 'Call';
+          } else if (typeInt === 1) {
+            hedgeTypeTxt = 'Put';
+          } else if (typeInt === 2) {
+            hedgeTypeTxt = 'Swap';
+          }
+
           const listItem = document.createElement('li');
           listItem.classList.add('hedge-item');
 
           const hedgeType = document.createElement('div');
           hedgeType.classList.add('hedge-type', 'hedge-i-cat');
-          hedgeType.textContent = result.hedgeType;
+          hedgeType.textContent = hedgeTypeTxt;
           listItem.appendChild(hedgeType);
 
           const tokenInfo = document.createElement('div');
