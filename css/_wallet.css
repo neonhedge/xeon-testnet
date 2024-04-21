@@ -1475,6 +1475,9 @@ button#transactSubmit{
 	font-size: clamp(14px, 1vw, 15px) !important;
 	color: #FFF !important;
 }
+.hSm {
+	max-width: 100px;
+}
 .hedge-i-cat {
 	min-width: 120px;
 	flex-grow: 1;
