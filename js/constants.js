@@ -121,7 +121,7 @@ async function getTokenETHValue(underlyingTokenAddr, bigIntBalanceInput) {
         } else if (pairedAddress === CONSTANTS.wethAddress) {
             pairSymbol = 'WETH';
         }
-        console.log(`<output: ${result[0]}, token: ${result[1]}, TV: ${trueValue}, ${pairSymbol}`);
+        console.log(`<output: ${result[0]}, token: ${result[1]}, TV: ${trueValue}, ${pairSymbol}, decimals: ${pairedAddressDecimal}`);
         return [trueValue, pairSymbol];
     } catch (error) {
         console.error("Error getting token ETH value:", error);
