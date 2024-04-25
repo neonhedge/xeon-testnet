@@ -159,7 +159,7 @@ async function createForm() {
             */
             const expiryTimestamp = 0;
 
-			// Prepare the form values if needed
+			// Prepare the form values
 			const values = {
 				hedgeType,
 				tokenAddress,
@@ -168,15 +168,11 @@ async function createForm() {
 				strikePrice,
                 expiryTimestamp
 			};
-
-            // You can use 'values' as needed
             console.log(values);
 
-            // Continue with your logic here
             await setupWritingModule(values);
 
         } else {
-            // Handle cancel or empty input
             swal.close();
         }
 	});
@@ -201,9 +197,9 @@ async function createForm() {
         const tokenDecimals = await getTokenDecimals(tokenAddress);
         const tokenAmountBN = fromDecimalToBigInt(tokenAmount, tokenDecimals);
         try {
+            // returns decimal value
             const [tokensPairedValue, pairedSymbol] = await getTokenETHValue(tokenAddress, tokenAmountBN); //input in wei, output already formated
-
-            // Display value in the HTML form
+            // format output
             const displayBalance = cardCommaFormat(tokensPairedValue);
             const tokenAmountValueDiv = document.getElementById("tokenAmountValueDiv");
             const tokenAmountValue = document.getElementById("tokenAmountValue");
