@@ -204,7 +204,7 @@ contract oXEONVAULT {
 
     // mapping bookmarks of each user
     mapping(address => mapping(uint256 => bool)) public bookmarks;
-    mapping(address => uint256[]) public bookmarkedOptions; // Array to store bookmarked optionIds for each user
+    mapping(address => uint256[]) public bookmarkedOptions; // Array to store bookmarked dealIds for each user
     
     // all deals
     uint[] private optionsCreated;    
@@ -249,10 +249,10 @@ contract oXEONVAULT {
     event received(address, uint);
     event onDeposit(address indexed token, uint256 indexed amount, address indexed wallet);
     event onWithdraw(address indexed token, uint256 indexed amount, address indexed wallet);
-    event hedgeCreated(address indexed token, uint256 indexed optionId, uint256 createValue, HedgeType hedgeType, address indexed writer);
-    event hedgePurchased(address indexed token, uint256 indexed optionId, uint256 startValue, HedgeType hedgeType, address indexed buyer);
-    event hedgeSettled(address indexed token, uint256 indexed optionId, uint256 endValue, uint256 payOff, address indexed miner);
-    event minedHedge(uint256 optionId, address indexed miner, address indexed token, address indexed paired, uint256 tokenFee, uint256 pairFee);
+    event hedgeCreated(address indexed token, uint256 indexed dealId, uint256 createValue, HedgeType hedgeType, address indexed writer);
+    event hedgePurchased(address indexed token, uint256 indexed dealId, uint256 startValue, HedgeType hedgeType, address indexed buyer);
+    event hedgeSettled(address indexed token, uint256 indexed dealId, uint256 endValue, uint256 payOff, address indexed miner);
+    event minedHedge(uint256 dealId, address indexed miner, address indexed token, address indexed paired, uint256 tokenFee, uint256 pairFee);
     event bookmarkToggle(address indexed user, uint256 hedgeId, bool bookmarked);
     event topupRequested(address indexed party, uint256 indexed hedgeId, uint256 topupAmount, bool consent);
     event zapRequested(uint indexed hedgeId, address indexed party);
@@ -788,7 +788,7 @@ contract oXEONVAULT {
             uint256[] storage options = bookmarkedOptions[msg.sender];
             for (uint256 i = 0; i < options.length; i++) {
                 if (options[i] == _dealID) {
-                    // When values match remove the optionId from array
+                    // When values match remove the dealId from array
                     if (i < options.length - 1) {
                         options[i] = options[options.length - 1];
                     }
@@ -991,8 +991,8 @@ contract oXEONVAULT {
         uint256 count = 0;
 
         for (uint256 i = 0; i < rangeSize; i++) {
-            uint256 optionId = startId + i;
-            hedgingOption storage hedge = hedgeMap[optionId];
+            uint256 dealId = startId + i;
+            hedgingOption storage hedge = hedgeMap[dealId];
             if (hedge.owner != address(0)) {
                 result[count] = hedge;
                 count++;
