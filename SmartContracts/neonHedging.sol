@@ -269,14 +269,6 @@ contract oXEONVAULT {
         owner = msg.sender;
     }
 
-    function getPrice(address token0, address token1, uint32 period) external view returns (uint256 priceX96) {
-        address poolAddress = uniswapV3Factory.getPool(token0, token1, 3000); // 3000 is the fee tier (0.3%)
-        require(poolAddress != address(0), "Pool doesn't exist");
-        
-        (int24 tick, ) = OracleLibrary.consult(poolAddress, period);
-        priceX96 = OracleLibrary.getQuoteAtTick(tick, 1 ether, token0, token1);
-    }
-
     function depositToken(address _token, uint256 _amount) external nonReentrant {
         require(_amount > 0, "You're attempting to transfer 0 tokens");
         // Deposit WETH , stables or ERC20
