@@ -833,10 +833,10 @@ contract oXEONVAULT {
         pairInfo.token1Decimals = uint256(10) ** pairInfo.token1.decimals();
         uint256 tokenValue;
         if (_tokenAddress == pair.token0()) {
-            tokenValue = (_tokenAmount * pairInfo.reserve1 * pairInfo.token0Decimals) / (pairInfo.reserve0 * pairInfo.token1Decimals);
+            tokenValue = (_tokenAmount * pairInfo.reserve1 * pairInfo.token1Decimals) / (pairInfo.reserve0 * pairInfo.token0Decimals);
             return (tokenValue, pairInfo.pairedCurrency);
         } else if (_tokenAddress == pair.token1()) {
-            tokenValue = (_tokenAmount * pairInfo.reserve0 * pairInfo.token1Decimals) / (pairInfo.reserve1 * pairInfo.token0Decimals);
+            tokenValue = (_tokenAmount * pairInfo.reserve0 * pairInfo.token0Decimals) / (pairInfo.reserve1 * pairInfo.token1Decimals);
             return (tokenValue, pairInfo.pairedCurrency);
         } else {
             revert("Invalid token address");
