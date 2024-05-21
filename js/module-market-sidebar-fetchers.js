@@ -282,7 +282,7 @@ async function prepareEventListItem(event, eventTopic) {
 
 	// Display the events in the sidebar div
 	const sidebarDiv = document.getElementById('scifiUI');
-  if (sidebarDiv.length == 0) { return; }
+  if (sidebarDiv === null) { return; }
   
 	// Create the list item
 	const listItem = document.createElement('li');

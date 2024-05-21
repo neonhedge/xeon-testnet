@@ -1,5 +1,5 @@
 // Update Section Values - Hedge Card
-function updateSectionValues_HedgeCard(
+async function updateSectionValues_HedgeCard(
     tokenName,
     tokenSymbol,
     tokenAmount,
@@ -94,12 +94,69 @@ function updateSectionValues_HedgeCard(
         tokenLogoDiv.style.backgroundImage = newBackgroundImageUrl;
 
         // Update the requests list
-        
+        await updateRequestsList(topupRequests, topupConsent, zapTaker, zapWriter);
 
     } catch (error) {
         console.error("Error Updating Net Worth section data:", error);
     }
 }
+
+async function updateRequestsList(topupRequests, zapConsent, zapTaker, zapWriter) {
+    try {
+        const requestsList = document.getElementById('requestList');
+        requestsList.innerHTML = '';
+
+        // Handle topup requests
+        for (let i = 0; i < topupRequests.length; i++) {
+            const request = topupRequests[i];
+            const topupData = await hedgingInstance.topupMap(request);
+            const requestSpan = document.createElement('span');
+            requestSpan.classList.add('request');
+
+            // Update the request status and type for topup requests
+            if (topupData.state == 0) {
+                requestSpan.innerHTML = `<i class="fa fa-bell"></i> Topup Request Pending <button class="requestButton actonRequest">Accept</button>`;
+            } else if (topupData.state == 1) {
+                requestSpan.innerHTML = `<i class="fa fa-check-circle"></i> Topup Accepted ${formatDate(topupData.acceptedDate)}`;
+            } else if (topupData.state == 2) {
+                requestSpan.innerHTML = `<i class="fa fa-times-circle"></i> Topup Rejected ${formatDate(topupData.acceptedDate)}`;
+            } 
+
+            requestsList.appendChild(requestSpan);
+        }
+
+        // Handle consent
+        // Consent has to be true or false, if false one of the taker or writer should be true
+        if (zapConsent && (zapTaker && zapWriter)) {
+            const consentHTML = `
+                <span><i class="fa fa-check-circle"></i> Zap Consent Given</span>
+            `;
+            const consentSpan = document.createElement('span');
+            consentSpan.classList.add('consent');
+            consentSpan.innerHTML = consentHTML;
+            requestsList.appendChild(consentSpan);
+        } else if (!zapConsent && (zapTaker || zapWriter)) {
+            const zapRequestSpan = document.createElement('span');
+            zapRequestSpan.classList.add('request');
+            zapRequestSpan.innerHTML = `<i class="fa fa-bell"></i> Zap Request Pending <button class="requestButton actonRequest">Accept</button>`;
+            requestsList.appendChild(zapRequestSpan);
+        }
+    } catch (error) {
+        console.error("Error updating requests list:", error);
+    }
+}
+
+// Format date to "DD/MM/YYYY HH:MM"
+function formatDate(dateString) {
+    const date = new Date(dateString);
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = String(date.getFullYear()).slice(2);
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    return `${day}/${month}/${year} ${hours}:${minutes}`;
+}
+
 function updateSectionValues_Progress(
     //date
     dt_createdFormatted,
@@ -254,8 +311,13 @@ function updateSectionValues_Gains(
         const deleteHedgeButton = document.getElementById("deleteHedge");
         const zapHedgeButton = document.getElementById("zapHedge");
         const settledAlreadyButton = document.getElementById("settledAlready");
-
+        
         $(".dealButton").hide();
+        // Only parties can have action buttons
+        if(userAddress != taker && userAddress != owner) {
+            $("#viewHedge").show();
+            return;
+        }
         status = parseFloat(status);
         if (status == 1) {
             if (userAddress !== owner) {

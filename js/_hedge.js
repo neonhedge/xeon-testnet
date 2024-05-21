@@ -5,7 +5,7 @@
 import { CONSTANTS } from './constants.js';
 import { initializeConnection, chainCheck, unlockedWallet, reqConnect, handleAccountChange, handleNetworkChange, popupSuccess} from './web3-walletstatus-module.js';
 import { fetchSection_HedgeCard, fetchSection_HedgeCardDefault } from './module-hedge-fetchers.js';
-import { purchaseInterface, deleteInterface, toggleBookmark } from './module-silkroad-writer.js';
+import { purchaseInterface, deleteInterface, toggleBookmark, zapInterface, topupInterface } from './module-silkroad-writer.js';
 
 /*=========================================================================
     Hedge Page Main Scripts
@@ -129,8 +129,31 @@ $(document).on('click', '#deleteHedge', function(e){
     deleteInterface(optionId);
   }
 });
-$(document).on('click', '#zapHedge', function(e){
-
+$(document).on('click', '#viewHedge', function(e){
+    swal({
+        title: "View Mode Enabled",
+        type: "warning",
+        text: "You are not part of this deal..",
+        html: true,
+        showCancelButton: false,
+        confirmButtonColor: "#04C86C",
+        confirmButtonText: "Oops..",
+        closeOnConfirm: true,
+        allowOutsideClick: true
+    }, async function(isConfirm) {  }); // close swal
+    return;
+});
+$(document).on('click', '#zapHedge, #requestZap', function(e){
+  const optionId = parseInt(window.optionID);
+  if (optionId) {
+    zapInterface(optionId);
+  }
+});
+$(document).on('click', '#requestTopup', function(e){
+  const optionId = parseInt(window.optionID);
+  if (optionId) {
+    topupInterface(optionId);
+  }
 });
 $(document).on('click', '#settleHedge', function(e){
   

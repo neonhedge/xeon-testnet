@@ -223,17 +223,16 @@
 						<div class="dealRequests">
 							<h5>Deal Requests..</h5>
 							<div class="requestWin">
-								<button class="requestButton">Topup <i class="fa-solid fa-dashboard"></i></button>
-								<button class="requestButton">Zap-it <i class="fa-solid fa-bolt"></i></button><span>Send a request to party B to Zap (settle hedge now as things stand), or to increase hedge collateral (risk more).</span>
+								<button id="requestTopup" class="requestButton">Topup <i class="fa-solid fa-dashboard"></i></button>
+								<button id="requestZap" class="requestButton">Zap-it <i class="fa-solid fa-bolt"></i></button><span>Send a request to party B to Zap (settle hedge now as things stand), or to increase hedge collateral (risk more).</span>
 							</div>
 							<div class="requestList" id="requestList">
-								<span><i class="fa fa-superpowers"></i> Topup Request Pending <button class="requestButton actonRequest">Accept</button></span>
-								<span><i class="fa fa-handshake-o"></i> Topup Accepted --/--/--</span>
-								<span><i class="fa fa-handshake-o"></i> Topup Accepted --/--/--</span>
-								<span><i class="fa fa-handshake-o"></i> Topup Accepted --/--/--</span>
-								<span><i class="fa fa-handshake-o"></i> Topup Accepted --/--/--</span>
-								<span><i class="fa fa-handshake-o"></i> Topup Accepted --/--/--</span>
-								<span><i class="fa fa-handshake-o"></i> Topup Accepted --/--/--</span>
+								<span><i class="fa fa-bell"></i> Topup Request Pending <button class="requestButton actonRequest">Accept</button></span>
+								<span><i class="fa fa-check-circle"></i> Topup Accepted 20/04/2024</span>
+								<span><i class="fa fa-check-circle"></i> Topup Accepted 19/04/2024</span>
+								<span><i class="fa fa-check-circle"></i> Topup Accepted 18/04/2024</span>
+								<span><i class="fa fa-check-circle"></i> Topup Accepted 17/04/2024</span>
+								<span><i class="fa fa-check-circle"></i> Topup Accepted 15/04/2024</span>
 							</div>
 						</div>
 					</div>
@@ -288,6 +287,9 @@
 					</div>		
 				</div>
 				<div class="partiesAction">
+					<button id="viewHedge" class="dealButton btn-cta" title="viewing mode only" style="display: inline-block;">
+						<i class="fa-solid fa-bolt"></i> Viewing Mode <!-- view only -->
+					</button>
 					<button id="takeHedge" class="dealButton btn-cta" title="buy hedge from writer" style="display: inline-block;">
 						<i class="fa-solid fa-bolt"></i> Buy Hedge <!-- accept zap, buy hedge, running -->
 					</button>
