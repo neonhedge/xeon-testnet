@@ -3,18 +3,21 @@ import { updateSectionValues_volumes, updateSectionValues_volumesERC20 } from '.
 // Load hedge volume: created, bought, settled, payouts, fees
 // Load token stats and information when searchBar contains token address
 async function loadSidebar() {
-    
-    const searchInput = $('#searchBar').val();
+  // Check if searchBar exists on the page
+  const searchBar = $('#searchBar');
+  
+  if (searchBar.length > 0) {
+      const searchInput = searchBar.val();
 
-    // check if address exists in search bar
-    if (searchInput.length >= 40 && isValidEthereumAddress(searchInput)) {
-        // filter sidebar infor for token
-        await loadSidebarVolume_Token(searchInput);
-    } else { 
-        // fetch all
-        await loadSidebarVolume_All();
-    }
-    
+      // check if address exists in search bar
+      if (searchInput.length >= 40 && isValidEthereumAddress(searchInput)) {
+          // filter sidebar info for token
+          await loadSidebarVolume_Token(searchInput);
+      } else {
+          // fetch all
+          await loadSidebarVolume_All();
+      }
+  }
 }
 
 async function loadSidebarVolume_All() {
@@ -279,6 +282,8 @@ async function prepareEventListItem(event, eventTopic) {
 
 	// Display the events in the sidebar div
 	const sidebarDiv = document.getElementById('scifiUI');
+  if (sidebarDiv.length == 0) { return; }
+  
 	// Create the list item
 	const listItem = document.createElement('li');
 
