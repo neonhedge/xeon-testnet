@@ -278,10 +278,6 @@ async function fetchSection_HedgeCard(){
         const tokenAmountArray = [tokenAmount, costDeci];
         updateChartValues_Assets(tokenNamesArray, tokenAmountArray);
 
-        // Hedge Requests - pull topup requests from mappings and populate list
-        // Put in separate module after hedgeCard
-        await fetchSection_HedgeRequests(topupRequests, hedgeOwner, hedgeTaker);
-
     } catch (error) {
         console.error("Error fetching Hedge Panel section data:", error);
     }
