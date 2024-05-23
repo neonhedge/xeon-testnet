@@ -403,7 +403,7 @@ contract oXEONVAULT {
         }
 
         // Log protocol analytics
-        optionID++;
+        dealID++;
         hedgesCreatedVolume[newOption.paired].add(newOption.createValue);
        // Emit
         emit hedgeCreated(token, dealID, newOption.createValue, newOption.hedgeType, msg.sender);
@@ -418,7 +418,7 @@ contract oXEONVAULT {
         userBalance storage stk = userBalanceMap[hedge.paired][msg.sender];
         require(hedge.status == 1, "Hedge already taken");
         require(block.timestamp < hedge.dt_expiry, "Hedge expired");
-        require(_dealID < optionID && msg.sender != hedge.owner, "Invalid option ID | Owner can't buy");
+        require(_dealID < dealID && msg.sender != hedge.owner, "Invalid option ID | Owner can't buy");
        (, , , uint256 withdrawable, , ) = getUserTokenBalances(hedge.paired, msg.sender);
         require(withdrawable >= hedge.cost, "Insufficient free Vault balance");
 
@@ -469,9 +469,8 @@ contract oXEONVAULT {
         emit hedgePurchased(hedge.token, _dealID, hedge.startValue, hedge.hedgeType, msg.sender);
     }
 
-    // topup Request & Accept function
+    // topup Request function
     // any party can initiate & accepter only matches amount
-    // Action is request (false) or accept (true)
     // Request amount can be incremented if not accepted yet
     function topupHedge(uint _dealID, uint256 amount) external nonReentrant {
         hedgingOption storage hedge = hedgeMap[_dealID];
@@ -498,46 +497,55 @@ contract oXEONVAULT {
 
         emit topupRequested(msg.sender, _dealID, amount);
     }
-    function acceptHedge(uint _requestID) external nonReentrant {
-        hedgingOption storage hedge = hedgeMap[_requestID];
-        require(msg.sender == hedge.owner || msg.sender == hedge.taker, "Invalid party to request");
-        require(topupMap[_requestID].state == 0, "Request already accepted");        
-        require(msg.sender != topupMap[_requestID].requester, "Requester can't accept the topup");
+    function acceptRequest(uint _requestID, uint _dealID) external nonReentrant {
+        topupRequest storage request = topupMap[_requestID];
+        hedgingOption storage hedge = hedgeMap[_dealID];
 
-        topupMap[_requestID].state = 1;
-        topupMap[_requestID].acceptTime = block.timestamp;
-       
-        // Owner tops up in token address currency
-        // Taker tops in paired currency of token address
-        // If msg.sender is not the requester, we accept in % of proportional paired value to match
-        // If msg.sender is the requester, we accept in token amount
+        require(msg.sender == hedge.owner || msg.sender == hedge.taker, "Invalid party to accept");
+        require(request.state == 0, "Request already accepted");
+        require(msg.sender != request.requester, "Requester can't accept the topup");
+
+        request.state = 1;
+        request.acceptTime = block.timestamp;
+
+        address token = hedge.token;
+        uint256 pairedAmount;
+
         if (msg.sender == hedge.owner) {
-            uint256 equivTopupInToken = topupMap[_requestID].amountTaker * getUnderlyingValue(hedge.token, 1) / 10**18;
-            (, , , uint256 withdrawable, , ) = getUserTokenBalances(hedge.token, msg.sender);
-            require(withdrawable >= equivTopupInToken, "Insufficient balance");
-            //increase hedge amount, commitment and startValue
-            hedge.amount += equivTopupInToken;
-            topupMap[topupRequestID].amountWriter += equivTopupInToken;            
-            hedge.startValue += getUnderlyingValue(hedge.token, equivTopupInToken);
+            // Owner accepts top-up with tokens
+            pairedAmount = request.amountTaker * (10**18) / getUnderlyingValue(token, 1);
+            require(getUserTokenBalances(token, msg.sender).withdrawable >= pairedAmount, "Insufficient balance");
+            hedge.amount += pairedAmount;
+            request.amountWriter += pairedAmount;
+            hedge.startValue += getUnderlyingValue(token, pairedAmount);
         } else if (msg.sender == hedge.taker) {
-            uint256 amountToMatch = topupMap[_requestID].amountWriter;
-            uint256 equivTopupInPaired = getUnderlyingValue(hedge.token, amountToMatch);
-            (, , , uint256 withdrawable, , ) = getUserTokenBalances(hedge.paired, msg.sender);
-            require(withdrawable >= equivTopupInPaired, "Insufficient balance");
-            //increase hedge cost, commitment and startValue
-            hedge.cost += equivTopupInPaired;
-            topupMap[topupRequestID].amountTaker += equivTopupInPaired;
-            hedge.startValue += equivTopupInPaired;
+            // Taker accepts top-up with paired currency
+            pairedAmount = request.amountWriter * getUnderlyingValue(token, 1) / (10**18);
+            require(getUserTokenBalances(hedge.paired, msg.sender).withdrawable >= pairedAmount, "Insufficient balance");
+            hedge.cost += pairedAmount;
+            request.amountTaker += pairedAmount;
+            hedge.startValue += pairedAmount;
         }
 
-        // lock collateral into deal
-        address tokenToUse = (msg.sender == hedge.owner) ? hedge.token : hedge.paired;
-        uint256 amountToUse = (msg.sender == hedge.owner) ? topupMap[_requestID].amountWriter : topupMap[_requestID].amountTaker;
-        userBalance storage bal = userBalanceMap[tokenToUse][msg.sender];
-        bal.lockedinuse = bal.lockedinuse.add(amountToUse);
-        userBalanceMap[tokenToUse][msg.sender] = bal;
+        // Lock collateral into deal for both parties
+        address ownerToken = hedge.token;
+        address takerToken = hedge.paired;
+        uint256 ownerAmountToUse = request.amountWriter;
+        uint256 takerAmountToUse = request.amountTaker;
 
-        emit topupRequested(msg.sender, _dealID, amountToUse, action);
+        // Check and lock owner collateral
+        require(getUserTokenBalances(ownerToken, hedge.owner).withdrawable >= ownerAmountToUse, "Insufficient owner collateral");
+        userBalance storage ownerBalance = userBalanceMap[ownerToken][hedge.owner];
+        ownerBalance.lockedinuse = ownerBalance.lockedinuse.add(ownerAmountToUse);
+        userBalanceMap[ownerToken][hedge.owner] = ownerBalance;
+
+        // Check and lock taker collateral
+        require(getUserTokenBalances(takerToken, hedge.taker).withdrawable >= takerAmountToUse, "Insufficient taker collateral");
+        userBalance storage takerBalance = userBalanceMap[takerToken][hedge.taker];
+        takerBalance.lockedinuse = takerBalance.lockedinuse.add(takerAmountToUse);
+        userBalanceMap[takerToken][hedge.taker] = takerBalance;
+
+        emit topupAccepted(msg.sender, _dealID, _requestID, pairedAmount);
     }
 
     function rejectTopupRequest(uint _dealID, uint _requestID) external {
