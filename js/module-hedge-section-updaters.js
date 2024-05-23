@@ -1,3 +1,5 @@
+import { acceptTopupInterface, acceptZapInterface } from './module-silkroad-writer.js';
+
 // Update Section Values - Hedge Card
 async function updateSectionValues_HedgeCard(
     tokenName,
@@ -34,16 +36,10 @@ async function updateSectionValues_HedgeCard(
     zapWriter, // bool
     //requests
     topupRequests, // uint256[]
-)   {
+) {
     try {
-        const formatValue = (value) => {
-        return `$${value.toFixed(2)}`;
-        };
-
-        const formatString = (number) => {
-            return number.toLocaleString();
-        };
-
+        const formatValue = (value) => `$${value.toFixed(2)}`;
+        const formatString = (number) => number.toLocaleString();
         const formatStringDecimal = (number) => {
             const options = {
                 style: 'decimal',
@@ -54,21 +50,15 @@ async function updateSectionValues_HedgeCard(
         };
 
         // Step 1: Update Type
-        // Define a mapping object for hedgeType values
         const hedgeTypeMapping = {
-            'CALL': { text: 'Call Option', color: '#089353' }, // CALL
-            'PUT': { text: 'Put Option', color: '#d6188a' },  // PUT
-            'SWAP': { text: 'Equity Swap', color: '#440076' }, // SWAP
+            'CALL': { text: 'Call Option', color: '#089353' },
+            'PUT': { text: 'Put Option', color: '#d6188a' },
+            'SWAP': { text: 'Equity Swap', color: '#440076' },
         };
-        
-        // Get the hedgeType value
-        const hedgeTypeDiv = document.querySelector('#hedgeType'); 
 
-        // Ensure hedgeType is a valid key our hedgeTypeMapping
-        const hedgeTypeValue = hedgeTypeMapping.hasOwnProperty(hedgeType) ? hedgeTypeMapping[hedgeType] : { text: 'Unknown Hedge', color: '#FFF' };
+        const hedgeTypeDiv = document.querySelector('#hedgeType');
+        const hedgeTypeValue = hedgeTypeMapping[hedgeType] || { text: 'Unknown Hedge', color: '#FFF' };
         document.getElementById('hedgeTypeCard').style.backgroundColor = hedgeTypeValue.color;
-
-        // Update the text content and background color of the div
         hedgeTypeDiv.textContent = hedgeTypeValue.text;
 
         // Step 2: Update token symbol & amount
@@ -87,11 +77,10 @@ async function updateSectionValues_HedgeCard(
         document.getElementById("created").textContent = dt_createdFormatted;
         document.getElementById("taken").textContent = dt_startedFormatted;
         document.getElementById("expires").textContent = dt_expiryFormatted;
-        
+
         // Update the tokenLogo background
         const tokenLogoDiv = document.getElementById('tokenLogo');
-        const newBackgroundImageUrl = 'url(\'./imgs/tokens/ovela.webp\')'; 
-        tokenLogoDiv.style.backgroundImage = newBackgroundImageUrl;
+        tokenLogoDiv.style.backgroundImage = 'url(\'./imgs/tokens/ovela.webp\')';
 
         // Update the requests list
         await updateRequestsList(topupRequests, topupConsent, zapTaker, zapWriter);
@@ -100,10 +89,11 @@ async function updateSectionValues_HedgeCard(
         console.error("Error Updating Net Worth section data:", error);
     }
 }
-
 async function updateRequestsList(topupRequests, zapConsent, zapTaker, zapWriter) {
     try {
         const requestsList = document.getElementById('requestList');
+
+        // Clear previous request list
         requestsList.innerHTML = '';
 
         // Handle topup requests
@@ -113,38 +103,64 @@ async function updateRequestsList(topupRequests, zapConsent, zapTaker, zapWriter
             const requestSpan = document.createElement('span');
             requestSpan.classList.add('request');
 
+            const topupButtonClass = `topupRequestButton`;
+            const topupButton = document.createElement('button');
+            topupButton.classList.add(topupButtonClass, 'actonRequest', 'requestButton');
+            topupButton.setAttribute('data-topup-request-id', request);
+            topupButton.textContent = 'Accept';
+
             // Update the request status and type for topup requests
             if (topupData.state == 0) {
-                requestSpan.innerHTML = `<i class="fa fa-bell"></i> Topup Request Pending <button class="requestButton actonRequest">Accept</button>`;
+                requestSpan.innerHTML = `<i class="fa fa-bell"></i> Topup Request Pending`;
+                requestSpan.appendChild(topupButton);
             } else if (topupData.state == 1) {
                 requestSpan.innerHTML = `<i class="fa fa-check-circle"></i> Topup Accepted ${formatDate(topupData.acceptedDate)}`;
             } else if (topupData.state == 2) {
                 requestSpan.innerHTML = `<i class="fa fa-times-circle"></i> Topup Rejected ${formatDate(topupData.acceptedDate)}`;
-            } 
+            }
 
             requestsList.appendChild(requestSpan);
         }
 
         // Handle consent
-        // Consent has to be true or false, if false one of the taker or writer should be true
         if (zapConsent && (zapTaker && zapWriter)) {
-            const consentHTML = `
-                <span><i class="fa fa-check-circle"></i> Zap Consent Given</span>
-            `;
+            const consentHTML = `<span><i class="fa fa-check-circle"></i> Zap Consent Given</span>`;
             const consentSpan = document.createElement('span');
             consentSpan.classList.add('consent');
             consentSpan.innerHTML = consentHTML;
             requestsList.appendChild(consentSpan);
         } else if (!zapConsent && (zapTaker || zapWriter)) {
+            const zapButtonClass = 'zapRequestButton';
+            const zapButton = document.createElement('button');
+            zapButton.classList.add(zapButtonClass, 'actonRequest', 'requestButton');
+            zapButton.setAttribute('data-zap-request-id', 'zapRequest');
+            zapButton.textContent = 'Accept';
+
             const zapRequestSpan = document.createElement('span');
             zapRequestSpan.classList.add('request');
-            zapRequestSpan.innerHTML = `<i class="fa fa-bell"></i> Zap Request Pending <button class="requestButton actonRequest">Accept</button>`;
+            zapRequestSpan.innerHTML = `<i class="fa fa-bell"></i> Zap Request Pending`;
+            zapRequestSpan.appendChild(zapButton);
+
             requestsList.appendChild(zapRequestSpan);
         }
+
+        // Add event listeners for the buttons
+        document.querySelectorAll('.actonRequest').forEach(button => {
+            button.addEventListener('click', function () {
+                if (this.classList.contains('topupRequestButton')) {
+                    const requestId = this.getAttribute('data-topup-request-id');
+                    acceptTopupInterface(requestId);
+                } else if (this.classList.contains('zapRequestButton')) {
+                    const requestId = this.getAttribute('data-zap-request-id');
+                    acceptZapInterface(requestId);
+                }
+            });
+        });
     } catch (error) {
         console.error("Error updating requests list:", error);
     }
 }
+
 
 // Format date to "DD/MM/YYYY HH:MM"
 function formatDate(dateString) {

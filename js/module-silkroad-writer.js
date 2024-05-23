@@ -975,7 +975,7 @@ async function zapInterface(optionId) {
         let proceedButtonText = 'checking ...';
         let transactionMessage = `
             <div>
-                <div id="requestConfirm" class="interfaceWindow">
+                <div id="zapRequestConfirm" class="interfaceWindow">
                     <span class="txStatus">You are about to send a Zap Request</span>
                     </br>
                     <span class="txStatus">To: ${partyB}</span>
@@ -1043,7 +1043,7 @@ async function zapInterface(optionId) {
 
         // Run display scrips on swal load
         $(".interfaceWindow").hide();
-        $("#requestConfirm").fadeIn("slow");
+        $("#zapRequestConfirm").fadeIn("slow");
         $('.confirm').html('Zap it!');
     } catch (error) {
         console.error('Error:', error.message);
@@ -1256,6 +1256,391 @@ async function requestTopup(optionId, amount, decimals) {
             confirmButtonColor: "#F27474",
             text: "Transaction error: " + error.message
         });
+    }
+}
+
+async function acceptZapInterface(optionId) {
+    const accounts = await getAccounts();
+    const walletAddress = accounts[0];
+
+    // Fetch the hedge owner by ID
+    let result = await hedgingInstance.getHedgeDetails(optionId);
+    let owner = result.owner;
+
+    // Fetch symbol, name, and decimals
+    let [name, decimals, symbol] = await getTokenDecimalSymbolName(result.token);
+    // Fetch token & pair address
+    let tokenAddress = result.token;
+    let truncatedTokenAdd = tokenAddress.substring(0, 6) + '...' + tokenAddress.slice(-3);
+    let tokenPairAddress = result.paired;
+    let truncatedPairAdd = tokenPairAddress.substring(0, 6) + '...' + tokenPairAddress.slice(-3);
+    // Prepare owner
+    let truncatedOwner = owner.substring(0, 6) + '...' + owner.slice(-3);
+    // Fetch taker
+    let taker = result.taker;
+    let truncatedTaker = taker.substring(0, 6) + '...' + taker.slice(-3);
+    // Fetch deal status
+    let status = parseFloat(result.status);        
+    // Format token amounts
+    let amountFormated = cardCommaFormat(result.tokenAmount);
+
+    // Determine parties in deal
+    let partyA, partyB;
+    if (owner === walletAddress) {
+        partyA = truncatedOwner;
+        partyB = truncatedTaker;
+    } else if (taker === walletAddress) {
+        partyA = truncatedTaker;
+        partyB = truncatedOwner;
+    } else {
+        console.log('User not in deal');
+        swal({
+            title: "View Mode Enabled",
+            type: "warning",
+            text: "You are not part of this deal.",
+            html: true,
+            showCancelButton: false,
+            confirmButtonColor: "#04C86C",
+            confirmButtonText: "Oops...",
+            closeOnConfirm: true,
+            allowOutsideClick: true
+        });
+        return;
+    }
+
+    // Fetch hedge type
+    let hedgeTypeFull;
+    if (result.hedgeType === 0) {
+        hedgeTypeFull = 'Call Option';
+    } else if (result.hedgeType === 1) {
+        hedgeTypeFull = 'Put Option';
+    } else if (result.hedgeType === 2) {
+        hedgeTypeFull = 'Equity Swap';
+    } else {
+        console.log('Hedge type is unknown');
+    }
+
+    if (accounts.length === 0) {
+        console.log('No wallet connected. Please connect a wallet.');
+        swal({
+            title: "Connect Wallet",
+            text: "Please connect your wallet to proceed.",
+            html: true,
+            showCancelButton: false,
+            confirmButtonColor: "#04C86C",
+            confirmButtonText: "Oops...",
+            closeOnConfirm: true
+        });
+        return;
+    }
+
+    try {
+        let transactionMessage = `
+            <div>
+                <div id="acceptZapRequestConfirm" class="interfaceWindow">
+                    <span class="txStatus">You are about to accept a Zap Request</span>
+                    </br>
+                    <span class="txStatus">From: ${partyB}</span>
+                    </br>
+                    <span class="walletbalanceSpan">To settle the ${hedgeTypeFull} now as things stand.</span>
+                    </br>
+                    </br>
+                    <div class="approvalInfo">
+                        <p>Proceed and confirm the transaction in your wallet.</p>
+                    </div>
+                </div>
+                <div id="requestInProgress" class="interfaceWindow">
+                    <span class="txStatus">Zap Request in progress...</span>
+                    </br>
+                    </br>
+                    <div class="approvalInfo">
+                        <p>Please confirm the transaction in your wallet.</p>
+                    </div>
+                    <span class="walletbalanceSpan">To settle the ${hedgeTypeFull} now as things stand.</span>
+                </div>
+                <div id="requestSuccess" class="interfaceWindow">
+                    <span class="txStatus">Zap Request Accepted!</span>
+                    </br>
+                    </br>
+                    <div class="approvalInfo">
+                        <p>
+                            <span class="txInfoHead txInfoAmount">You have successfully accepted the Zap Request from ${partyB}. Check the deal card for further updates.</span>
+                        </p>
+                    </div>
+                    <div class="explainer">
+                        <span> 
+                            <i class="fa fa-info-circle"></i>
+                            Settlement will be completed once all parties confirm the acceptance.
+                        </span>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        swal({
+            title: "",
+            text: transactionMessage,
+            type: "info",
+            html: true,
+            dangerMode: true,
+            confirmButtonText: "Accept",
+            confirmButtonColor: "#171716",
+            cancelButtonText: "Cancel",
+            closeOnConfirm: false,
+            showCancelButton: true
+        }, async function (isConfirm) {
+            if (isConfirm) {
+                $('.confirm').prop("disabled", false);
+                $('.confirm').html('<i class="fa fa-spinner fa-spin"></i> Processing...');
+                $("#acceptZapRequestConfirm").hide();
+                $("#requestInProgress").show();
+                // Call proceed function
+                await acceptZap(optionId);
+            } else {
+                swal("Cancelled", "The request has been cancelled.", "error");
+            }
+        });
+
+        // Run display scripts on swal load
+        $(".interfaceWindow").hide();
+        $("#acceptZapRequestConfirm").fadeIn("slow");
+        $('.confirm').html('Accept');
+    } catch (error) {
+        console.error('Error:', error.message);
+    }
+}
+
+async function acceptZap(optionId) {
+    try {
+        // Submit transaction
+        const transaction = await hedgingInstance.connect(signer).acceptRequest(optionId);
+        // Wait for the transaction to be mined
+        const receipt = await transaction.wait();
+
+        if (receipt.status === 1) {
+            console.log('Request accepted successfully. Transaction hash:', receipt.transactionHash);
+            swal({
+                title: "Request Accepted!",
+                type: "success",
+                text: "Transaction hash: " + receipt.transactionHash,
+                confirmButtonColor: "#04C86C",
+                allowOutsideClick: true
+            });
+            $("#requestInProgress").hide();
+            $("#requestSuccess").fadeIn("slow");
+        } else {
+            console.log('Request acceptance failed. Receipt status:', receipt.status);
+            swal({
+                title: "Failed to Accept Request.",
+                type: "error",
+                text: "Transaction failed. Receipt status: " + receipt.status,
+                confirmButtonColor: "#F27474",
+                allowOutsideClick: true
+            });
+        }
+    } catch (error) {
+        console.error('Acceptance Error:', error.message);
+        swal({
+            title: "Failed to Accept Request.",
+            type: "error",
+            text: "Transaction error: " + error.message,
+            confirmButtonColor: "#F27474",
+            allowOutsideClick: true
+        });
+    }
+}
+
+async function acceptTopupInterface(requestId) {
+    const accounts = await getAccounts();
+    const walletAddress = accounts[0];
+
+    // Fetch the topup owner by ID
+    let result = await hedgingInstance.getHedgeDetails(requestId);
+    let owner = result.owner;
+
+    // Fetch symbol, name, and decimals
+    let [name, decimals, symbol] = await getTokenDecimalSymbolName(result.token);
+    // Fetch token & pair address
+    let tokenAddress = result.token;
+    let truncatedTokenAdd = tokenAddress.substring(0, 6) + '...' + tokenAddress.slice(-3);
+    let tokenPairAddress = result.paired;
+    let truncatedPairAdd = tokenPairAddress.substring(0, 6) + '...' + tokenPairAddress.slice(-3);
+    // Prepare owner
+    let truncatedOwner = owner.substring(0, 6) + '...' + owner.slice(-3);
+    // Fetch taker
+    let taker = result.taker;
+    let truncatedTaker = taker.substring(0, 6) + '...' + taker.slice(-3);
+    // Fetch deal status
+    let status = parseFloat(result.status);        
+    // Format token amounts
+    let amountFormated = cardCommaFormat(result.tokenAmount);
+
+    // Determine parties in deal
+    let partyA, partyB;
+    if (owner === walletAddress) {
+        partyA = truncatedOwner;
+        partyB = truncatedTaker;
+    } else if (taker === walletAddress) {
+        partyA = truncatedTaker;
+        partyB = truncatedOwner;
+    } else {
+        console.log('User not in deal');
+        swal({
+            title: "View Mode Enabled",
+            type: "warning",
+            text: "You are not part of this deal.",
+            html: true,
+            showCancelButton: false,
+            confirmButtonColor: "#04C86C",
+            confirmButtonText: "Oops...",
+            closeOnConfirm: true,
+            allowOutsideClick: true
+        });
+        return;
+    }
+
+    // Fetch hedge type
+    let hedgeTypeFull;
+    if (result.hedgeType === 0) {
+        hedgeTypeFull = 'Call Option';
+    } else if (result.hedgeType === 1) {
+        hedgeTypeFull = 'Put Option';
+    } else if (result.hedgeType === 2) {
+        hedgeTypeFull = 'Equity Swap';
+    } else {
+        console.log('Hedge type is unknown');
+    }
+
+    if (accounts.length === 0) {
+        console.log('No wallet connected. Please connect a wallet.');
+        swal({
+            title: "Connect Wallet",
+            text: "Please connect your wallet to proceed.",
+            html: true,
+            showCancelButton: false,
+            confirmButtonColor: "#04C86C",
+            confirmButtonText: "Oops...",
+            closeOnConfirm: true
+        });
+        return;
+    }
+
+    try {
+        let transactionMessage = `
+            <div>
+                <div id="acceptTopupRequestConfirm" class="interfaceWindow">
+                    <span class="txStatus">You are about to accept a Topup Request</span>
+                    </br>
+                    <span class="txStatus">From: ${partyB}</span>
+                    </br>
+                    <span class="walletbalanceSpan">To settle the ${hedgeTypeFull} now as things stand.</span>
+                    </br>
+                    </br>
+                    <div class="approvalInfo">
+                        <p>Proceed and confirm the transaction in your wallet.</p>
+                    </div>
+                </div>
+                <div id="requestInProgress" class="interfaceWindow">
+                    <span class="txStatus">Topup Request in progress...</span>
+                    </br>
+                    </br>
+                    <div class="approvalInfo">
+                        <p>Please confirm the transaction in your wallet.</p>
+                    </div>
+                    <span class="walletbalanceSpan">To settle the ${hedgeTypeFull} now as things stand.</span>
+                </div>
+                <div id="requestSuccess" class="interfaceWindow">
+                    <span class="txStatus">Topup Request Accepted!</span>
+                    </br>
+                    </br>
+                    <div class="approvalInfo">
+                        <p>
+                            <span class="txInfoHead txInfoAmount">You have successfully accepted the Topup Request from ${partyB}. Check the deal card for further updates.</span>
+                        </p>
+                    </div>
+                    <div class="explainer">
+                        <span> 
+                            <i class="fa fa-info-circle"></i>
+                            Settlement will be completed once all parties confirm the acceptance.
+                        </span>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        swal({
+            title: "",
+            text: transactionMessage,
+            type: "info",
+            html: true,
+            dangerMode: true,
+            confirmButtonText: "Accept",
+            confirmButtonColor: "#171716",
+            cancelButtonText: "Cancel",
+            closeOnConfirm: false,
+            showCancelButton: true
+        }, async function (isConfirm) {
+            if (isConfirm) {
+                $('.confirm').prop("disabled", false);
+                $('.confirm').html('<i class="fa fa-spinner fa-spin"></i> Processing...');
+                $("#acceptTopupRequestConfirm").hide();
+                $("#requestInProgress").show();
+                // Call proceed function
+                await acceptTopup(optionId);
+            } else {
+                swal("Cancelled", "The request has been cancelled.", "error");
+            }
+        });
+
+        // Run display scripts on swal load
+        $(".interfaceWindow").hide();
+        $("#acceptTopupRequestConfirm").fadeIn("slow");
+        $('.confirm').html('Accept');
+    } catch (error) {
+        console.error('Error:', error.message);
+    }
+}
+
+async function acceptTopup(requestId) {
+    // Get equiv amount in paired currency
+    try {
+        // Submit transaction
+        const transaction = await hedgingInstance.connect(signer).topupHedge(requestId, amount, true);
+        
+        // Wait for the transaction to be mined
+        const receipt = await transaction.wait();
+
+        if (receipt.status === 1) {
+            console.log('Topup request accepted successfully. Transaction hash:', receipt.transactionHash);
+            swal({
+                title: "Request Accepted!",
+                type: "success",
+                text: "Transaction hash: " + receipt.transactionHash,
+                confirmButtonColor: "#04C86C",
+                allowOutsideClick: true
+            });
+            $("#requestInProgress").hide();
+            $("#requestSuccess").fadeIn("slow");
+        } else {
+            console.log('Topup request acceptance failed. Receipt status:', receipt.status);
+            swal({
+                title: "Failed to Accept Request.",
+                type: "error",
+                text: "Transaction failed. Receipt status: " + receipt.status,
+                confirmButtonColor: "#F27474",
+                allowOutsideClick: true
+            });
+        }
+    } catch (error) {
+        console.error('Acceptance Error:', error.message);
+        swal({
+            title: "Failed to Accept Request.",
+            type: "error",
+            text: "Transaction error: " + error.message,
+            confirmButtonColor: "#F27474",
+            allowOutsideClick: true
+        });
+   
     }
 }
 
@@ -1546,5 +1931,5 @@ function refreshBalances() {
     console.log('Refreshing balances...');
 }
 
-export { setupWritingModule, createForm, submitWriting, purchaseInterface, deleteInterface, zapInterface, topupInterface, toggleBookmark};
+export { setupWritingModule, createForm, submitWriting, purchaseInterface, deleteInterface, zapInterface, topupInterface, acceptTopupInterface, acceptZapInterface, toggleBookmark};
   
